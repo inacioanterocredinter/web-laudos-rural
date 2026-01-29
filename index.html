@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Laudo de levantamento e estimativa de produção para agronegócio." />
+
+  <title>Portifólio Agronegócio</title>
+  
+    <!-- Fonte -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700&display=swap" rel="stylesheet">
+    <!-- Conecta ao style.css-->
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <img src="static/img/logo_credinter.png" alt="Logo Credinter" class="logo-header">
+    <h1>Laudo de Levantamento e Estimativa de Produção</h1>
+  </header>
+
+  <main class="container" id="export-area">
+
+
+<!-- Dados Do Cliente -->
+
+<section class="card">
+  <!-- Cabeçalho com título à esquerda e botões à direita -->
+  <div class="card-header">
+    <h2>Dados do Produtor(a)🚜</h2>
+    <div class="header-actions">
+      <!-- Botão: Adicionar Produtor Rural -->
+      <button type="button" class="btn btn-add-inline" id="btn-add-cliente" aria-label="Adicionar Produtor Rural">
+        <span class="btn-icon" aria-hidden="true" focusable="false">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/>
+          </svg>
+        </span>
+        <span class="btn-text">Adicionar Produtor Rural</span>
+      </button>
+
+      <!-- Botão: Remover Produtor Rural -->
+      <button type="button" class="btn btn-remove-inline" id="btn-remove-cliente" aria-label="Remover Produtor Rural">
+        <span class="btn-icon" aria-hidden="true" focusable="false">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M18.3 5.71 12 12.01l6.3 6.29-1.41 1.41L10.6 13.43l-6.29 6.29-1.41-1.41L9.19 12.01 2.9 5.71 4.31 4.3l6.29 6.29 6.29-6.29z"/>
+          </svg>
+        </span>
+        <span class="btn-text">Remover Produtor Rural</span>
+      </button>
+    </div>
+  </div>
+
+  <form id="form-cliente">
+    <!-- Contêiner dos pares dinamicamente adicionados -->
+    <div id="container-clientes" class="grid-2">
+      <!-- Nome -->
+      <label for="cliente-nome">Nome do(a) Produtor / Produtora
+        <input type="text" id="cliente-nome" class="uppercase force-uppercase"
+               placeholder="Digite o nome do(a) Produtor(a)"
+               pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$" required />
+      </label>
+
+      <!-- CPF/CNPJ -->
+      <label for="cliente-cpfcnpj">CPF
+        <input type="text" id="cliente-cpfcnpj" inputmode="numeric" autocomplete="off"
+               placeholder="Digite CPF" maxlength="14"   required />
+        <small id="cpfcnpj-help" class="field-help" aria-live="polite"></small>
+      </label>
+
+      <!-- Porte -->
+      <label for="cliente-porte">Porte do produtor
+        <select id="cliente-porte" required>
+          <option value="" disabled selected>Selecione o porte do produtor</option>
+          <option value="PEQUENO PRODUTOR">Pequeno Produtor</option>
+          <option value="MÉDIO PRODUTOR">Médio Produtor</option>
+          <option value="GRANDE PRODUTOR">Grande Produtor</option>
+        </select>
+      </label>
+
+      <!-- Telefone -->
+      <label for="cliente-telefone">Telefone
+        <input type="text" id="cliente-telefone" placeholder="Digite o telefone"
+               inputmode="numeric" autocomplete="tel" maxlength="16"
+               pattern="^\(\d{2}\)\s9\s\d{4}-\d{4}$" required />
+        <small id="telefone-help" class="field-help"></small>
+      </label>
+    </div>
+  </form>
+</section>
+
+
+
+<!-- PROPRIEDADE -->
+<section class="card">
+  <!-- Cabeçalho com título à esquerda e botões à direita -->
+  <div class="card-header">
+    <h2>Propriedade</h2>
+
+    <div class="header-actions">
+      <!-- Adicionar Propriedade -->
+      <button type="button" class="btn btn-add-inline" id="btn-add-propriedade" aria-label="Adicionar Propriedade">
+        <span class="btn-icon" aria-hidden="true" focusable="false">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/>
+          </svg>
+        </span>
+        <span class="btn-text">Adicionar Propriedade</span>
+      </button>
+
+      <!-- Remover Propriedade -->
+      <button type="button" class="btn btn-remove-inline" id="btn-remove-propriedade" aria-label="Remover Propriedade">
+        <span class="btn-icon" aria-hidden="true" focusable="false">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M18.3 5.71 12 12.01l6.3 6.29-1.41 1.41L10.6 13.43l-6.29 6.29-1.41-1.41L9.19 12.01 2.9 5.71 4.31 4.3l6.29 6.29 6.29-6.29z"/>
+          </svg>
+        </span>
+        <span class="btn-text">Remover Propriedade</span>
+      </button>
+    </div>
+  </div>
+
+  <form id="form-propriedade">
+    <!-- Container que agrupa o bloco base e os blocos dinâmicos -->
+    <div id="container-propriedade" style="margin-top: 8px;">
+      <!-- BLOCO BASE (sem divisória) -->
+      <div class="grid-2 propriedade-bloco propriedade-bloco--base" data-idx="base">
+        <!-- Nome + Área -->
+        <label for="prop-nome">Nome da propriedade
+          <input type="text" id="prop-nome" class="uppercase force-uppercase"
+                 placeholder="Digite o nome da propriedade"
+                 pattern="^[0-9A-Za-zÀ-ÖØ-öø-ÿ\\s'-]+$" required />
+        </label>
+
+        <label for="prop-area-total">Área total (ha)
+          <input type="text" id="prop-area-total" placeholder="Digite a área total (ha)"
+                 inputmode="decimal" pattern="^\\d+(?:[.,]\\d+)?$" required />
+        </label>
+
+        <!-- Posse + CNPJ -->
+        <label for="prop-posse">Condição de posse
+          <input type="text" id="prop-posse" placeholder="Digite a condição de posse (ex.: PROPRIETÁRIO)"
+                 pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\\s'-]+$" required />
+        </label>
+
+        <label for="prop-cnpj">CNPJ do Proprietário
+          <input type="text" id="prop-cnpj" placeholder="Digite o CNPJ" inputmode="numeric"
+                 autocomplete="off" maxlength="18" required />
+          <small id="prop-cnpj-help" class="field-help"></small>
+        </label>
+
+        <!-- Estado + Cidade -->
+        <label for="prop-estado">
+          Estado
+          <select id="prop-estado" name="prop-estado" required>
+            <option value="" disabled selected>Selecione o estado (UF)</option>
+            <!-- UFs via JS -->
+          </select>
+        </label>
+
+        <label for="prop-cidade-search">
+          Cidade
+          <input id="prop-cidade-search" class="form-control"  class="as-select" placeholder="Buscar cidade..."
+                 list="dl-cidades" autocomplete="off" disabled required />
+          <datalist id="dl-cidades"></datalist>
+          <select id="prop-cidade" name="prop-cidade" required style="display:none;">
+            <option value="" disabled selected>Selecione a cidade</option>
+          </select>
+        </label>
+
+        <!-- Matrícula -->
+        <label for="prop-matricula">Matrícula
+          <input type="text" id="prop-matricula" placeholder="Digite a matrícula"
+                 inputmode="numeric" autocomplete="off" maxlength="13" required />
+          <small id="prop-matricula-help" class="field-help"></small>
+        </label>
+
+      <!-- Situação da Propriedade -->
+      <label for="cliente-porte">Situação Propridade
+        <select id="cliente-porte" required>
+          <option value="" disabled selected>Selecione a Situação Da Propriedade</option>
+          <option value="INDIVIDUAL">INDIVIDUAL</option>
+          <option value="COJUNTO">CONJUNTO</option>
+        </select>
+      </label>
+  </form>
+</section>
+
+
+
+    <!-- TABELA DE PREÇOS -->
+    <section class="card">
+      <div class="card-header">
+        <h2>Preços do Produto 💵</h2>
+        <button type="button" class="btn" id="btn-add-preco">Adicionar preço</button>
+      </div>
+      <table id="tbl-precos" class="tbl-precos">
+        <thead>
+          <tr>
+            <th class="c-cultura">Cultura / Atividade</th>
+            <th class="c-data">Data</th>
+            <th class="c-fonte">Fonte</th>
+            <th class="c-estado">Estado</th>
+            <th class="c-municipio">Município</th>
+            <th class="c-preco">Preço atual</th>
+            <th class="c-acoes">Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <!-- Linhas adicionadas via JS -->
+        </tbody>
+
+        </table>
+    </section>
+
+<!-- PRODUÇÃO AGRÍCOLA -->
+<section class="card">
+  <div class="card-header">
+    <h2>Produção Agrícola 🌾</h2>
+    <button type="button" class="btn" id="btn-add-agricola">Adicionar linha</button>
+  </div>
+
+  <!-- Wrapper para garantir que a tabela não estoure o card -->
+  <div class="table-wrapper">
+    <table id="tbl-agricola" class="tbl-agricola">
+      <thead>
+       <tr>
+          <th class="c-ano-agricola">Ano Safra</th>
+          <th class="c-cultura-agricola">Cultura</th>
+          <th class="c-und-medida-agricola">Und. Medida</th> <!-- nome exato, sem espaço -->
+          <th class="c-area-agricola">Área (ha)</th>
+          <th class="c-produt-agricola">Prod. (ha)</th>
+          <th class="c-producao-agricola">Produção</th>
+          <th class="c-saldo-agricola">Saldo</th>
+          <th class="c-acoes-agricola">Ações</th>
+      </tr>
+    </thead>
+
+
+      <tbody>
+        <!-- Linhas adicionadas via JS -->
+      </tbody>
+
+      
+      <tfoot>
+        <tr>
+          <td colspan="7" class="right"><strong>Total Renda Agrícola</strong></td>
+          <td><strong id="total-renda-agricola">R$ 0,00</strong></td>
+        </tr>
+      </tfoot>
+
+    </table>
+  </div>
+</section>
+
+
+<!-- PECUÁRIA DE CORTE-->
+<section class="card">
+  <div class="card-header">
+    <h2>Pecuária De Corte 🐮🥩|🐷🍖|🐔🍗</h2>
+    <button type="button" class="btn" id="btn-add-pecuaria">Adicionar linha</button>
+  </div>
+
+  <!-- Wrapper para garantir que a tabela não estoure o card -->
+  <div class="table-wrapper">
+    <table id="tbl-pecuaria" class="tbl-pecuaria">
+      <thead>
+        <tr>
+          <th class="c-ano-safra-corte">Ano Safra</th>
+          <th class="c-atividade-corte">Atividade</th>
+          <th class="c-und-medida-corte">Und. Medida</th> <!-- nome exato, sem espaço -->
+          <th class="c-ua-ha-corte">UA/ha</th>
+          <th class="c-area-util-corte">Á. Utili.</th>
+          <th class="c-quantidade-corte">Qtde</th>
+          <th class="c-peso-corte">Peso</th>
+          <th class="c-producao">Produção</th>
+          <th class="c-saldo">Saldo</th>
+          <th class="c-acoes">Ações</th>
+        </tr>
+      </thead>
+
+
+      <tbody>
+        <!-- Linhas adicionadas via JS -->
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <!-- 5 colunas até Produção -->
+          <td colspan="9" class="right"><strong>Total Renda Agropecuária</strong></td>
+          <td><strong id="total-renda-agropecuaria-tabela">R$ 0,00</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</section>
+
+
+<!-- PRODUÇÃO PECUÁRIA DE LEITEIRA -->
+<section class="card">
+  <div class="card-header">
+    <h2>Pecuária Leiteira 🐄🥛</h2>
+    <button type="button" class="btn" id="btn-add-pecuaria-leite">Adicionar linha</button>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="tbl-pecuaria-leite" class="tbl-pecuaria-leite">   
+      <thead>
+        <tr>
+          <th class="c-ano-civil-leite">Ano Civil</th>
+          <th class="c-atividade-leite">Atividade</th>
+          <th class="c-producao-dia-leite">Produt. (L/dia)</th>
+          <th class="c-area-util-leite">Á. Utili.</th>
+          <th class="c-quantidade-leite">Vacas em Lactação</th>
+          <th class="c-producao-total">Produção Total</th>
+          <th class="c-saldo">Saldo</th>
+          <th class="c-acoes">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <!-- Linhas adicionadas via JS -->
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="7" class="right"><strong>Total renda leiteira</strong></td>
+          <td><strong id="total-renda-leiteira-tabela">R$ 0,00</strong></td>
+        </tr>
+      </tfoot>
+
+    </table>
+  </div>
+</section>
+
+
+
+<!-- PRODUÇÃO DE LÃ -->
+<section class="card">
+  <div class="card-header">
+    <h2>Pecuária De Lã 🐑</h2>
+    <button type="button" class="btn" id="btn-add-la">Adicionar linha</button>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="tbl-la" class="tbl-la">
+
+      <thead>
+        <tr>
+          <th class="c-ano-safra-la">Ano Safra</th>
+          <th class="c-atividade-la">Atividade</th>
+          <th class="c-ovelhas-la">Nº Ovelhas</th>
+          <th class="c-produt-la">Produt. (kg/ovelha)</th>
+          <th class="c-producao-total-la">Produção Total</th>
+          <th class="c-saldo-la">Saldo</th>
+          <th class="c-acoes-la">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <!-- linhas adicionadas via JS -->
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="6" class="right"><strong>Total Renda Lã</strong></td>
+          <td><strong id="total-renda-la-tabela">R$ 0,00</strong></td>
+        </tr>
+      </tfoot>
+
+    </table>
+  </div>
+</section>
+
+
+<!-- PRODUÇÃO DE OVOS -->
+<section class="card">
+  <div class="card-header">
+    <h2>Avicultura De Postura 🥚</h2>
+    <button type="button" class="btn" id="btn-add-ovos">Adicionar linha</button>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="tbl-ovos" class="tbl-ovos">
+
+      <thead>
+        <tr>
+          <th class="c-ano-safra-ovos">Ano Safra</th>
+          <th class="c-atividade-ovos">Atividade</th>
+          <th class="c-aves-ovos">Nº de Aves</th>
+          <th class="c-produt-dia-ovos">Produt. (ovos/dia)</th>
+          <th class="c-producao-total-ovos">Produção Total</th>
+          <th class="c-saldo-ovos">Saldo</th>
+          <th class="c-acoes-ovos">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <!-- Linhas adicionadas via JS -->
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="6" class="right"><strong>Total renda ovos</strong></td>
+          <td><strong id="total-renda-ovos-tabela">R$ 0,00</strong></td>
+        </tr>
+      </tfoot>
+
+    </table>
+  </div>
+</section>
+
+
+
+    <!-- HISTÓRICO -->
+<section class="card">
+  <div class="card-header">
+    <h2>Histórico de Produção</h2>
+    <button type="button" class="btn" id="btn-add-historico">Adicionar linha</button>
+  </div>
+
+  <!-- Wrapper para garantir que a tabela não estoure o card -->
+  <div class="table-wrapper">
+    <table id="tbl-historico" class="tbl-historico">
+      <thead>
+        <tr>
+          <th class="c-ano-safra-historico">Ano safra</th>
+          <th class="c-cultura-historico">Cultura / Atividade</th>
+          <th class="c-area-historico">Área (ha)</th>
+          <th class="c-produt-historico">Produt. (ha)</th>
+          <th class="c-producao-historico">Produção</th>
+          <th class="c-saldo-historico">Saldo</th>
+          <th class="c-acoes-historico">Ações</th>
+        </tr>
+      </thead>
+
+        <tbody>
+          <!-- Linhas adicionadas via JS -->
+        </tbody>
+      </table>
+    </section>
+
+
+
+    
+<section class="card card-total">
+  <h2>Renda Total Agrícola e Pecuária</h2>
+
+  <p class="totalizador">Subtotal Pecuária 🐮🥩 | 🐷🍖 | 🐔🍗 :
+    <strong id="total-renda-agropecuaria">R$ 0,00</strong>
+  </p>
+
+  <p class="totalizador">Subtotal Leiteira 🐄🥛 :
+    <strong id="total-renda-leiteira">R$ 0,00</strong>
+  </p>
+
+  <p class="totalizador">Subtotal Lã 🐑 :
+    <strong id="total-renda-la">R$ 0,00</strong>
+  </p>
+
+  <p class="totalizador">Subtotal Ovos 🥚 :
+    <strong id="total-renda-ovos">R$ 0,00</strong>
+  </p>
+
+  <p class="totalizador">Total Agrícola 🌾 :
+    <strong id="renda-total-agricola">R$ 0,00</strong>
+  </p>
+
+  <p class="totalizador">Total Pecuária :
+    <strong id="renda-total-pecuaria">R$ 0,00</strong>
+  </p>
+
+  <p class="totalizador">Total Geral 💰 :
+    <strong id="renda-total">R$ 0,00</strong>
+  </p>
+</section>
+
+
+
+<!-- REBANHO -->
+<section class="card">
+  <div class="card-header">
+    <h2>Rebanho Existente</h2>
+     <button type="button" class="btn" id="btn-add-rebanho">Adicionar Ao Rebanho</button>
+    <!-- Se precisar de ações aqui no futuro, coloque botões nesta área -->
+  </div>
+
+  <div class="table-wrapper">
+    <table id="tbl-rebanho" class="tbl tbl-rebanho">
+      <thead>
+        <tr>
+          <th>Faixa etária</th>
+          <th>Sexo</th>
+          <th>Quantidade</th>
+          <th class="c-acoes">Ações</th> <!-- opcional, só para rotular -->
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Linhas adicionadas via JS -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" class="right"><strong>Total</strong></td>
+          <td><strong id="total-rebanho">0</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div><!-- ✅ fecha .table-wrapper -->
+</section>
+
+
+
+
+<!-- BENS -->
+<section class="card">
+  <div class="card-header">
+    <h2>Bens</h2>
+    <button type="button" class="btn" id="btn-add-bem">Adicionar bem</button>
+  </div>
+
+  <!-- Wrapper para garantir que a tabela não estoure o card -->
+  <div class="table-wrapper">
+    <table id="tbl-bens" class="tbl tbl-bens">
+      <thead>
+        <tr>
+          <th class="c-descricao">Descrição</th>
+          <th class="c-marca">Marca / Modelo</th>
+          <th class="c-ano-fab">Ano fabricação</th>
+          <th class="c-cor">Cor predominante</th>
+          <th class="c-valor">Valor de mercado</th>
+          <th class="c-acoes">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Linhas adicionadas via JS -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" class="right"><strong>Total</strong></td>
+          <td><strong id="total-bens">R$ 0,00</strong></td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div><!-- ✅ fecha .table-wrapper -->
+</section>
+
+
+<!-- Galeria De Imagens -->
+    
+      <section class="card">
+        <div class="card-header">
+          <h2>Galeria De Imagens</h2>
+          <!-- Botão para escolher imagens -->
+          <button type="button" class="btn" id="btn-add-imagens">Adicionar Imagens</button>
+        </div>
+        <!-- Input escondido -->  
+        <input type="file" id="input-imagens" accept="image/*" multiple style="display: none;" />
+
+        <!-- Área para preview -->
+        <div id="galeria-imagens" class="galeria-grid"></div>
+      </section>
+
+<!-- Dados Do Agrônomo -->
+<section class="card">
+  <h2>Dados do Agrônomo</h2>
+
+  <form id="form-cliente" class="grid-2">
+
+    <label for="cliente-resp-tec">Responsável técnico
+      <input type="text" id="cliente-resp-tec" class="uppercase force-uppercase" placeholder="Digite o nome do responsável técnico" pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$" required/>
+    </label>
+
+    <label for="cliente-crea">CREA / CFTA
+      <input type="text" id="cliente-crea" placeholder="Digite CREA ou CFTA" required />
+    </label>
+  </form>
+</section>
+
+<!-- GERAR PDF -->
+<section class="card no-print" id="card-exportar-laudo">
+  <div class="card-header">
+    <h2>Exportar Laudo</h2>
+    <button type="button" class="btn" id="btn-gerar-pdf">Gerar PDF</button>
+  </div>
+</section>
+      
+</main>
+
+
+  <footer class="app-footer">
+    <p>&copy; Laudo Web</p>
+  </footer>
+    <!-- JS linkado corretamente -->
+
+    <!-- Biblioteca html2pdf -->
+    <script src="static/js/html2pdf.bundle.min.js"></script>
+
+    <!-- Importa o script no final do body -->
+    <script src="static/js/script.js" ></script>
+
+</body>
+</html>

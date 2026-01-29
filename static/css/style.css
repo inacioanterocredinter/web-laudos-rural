@@ -1,0 +1,1118 @@
+
+/* =========================================================
+   FONTES (dica: prefira <link> no HTML para melhor performance)
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css?family=Montserrat:700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600&display=swap');
+
+/* =========================================================
+   VARIÁVEIS / TEMA
+   ========================================================= */
+:root {
+  --green: #003641;
+  --bg: #f5f7f6;
+  --card-bg: #ffffff;
+  --text: #222;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+
+  /* auxiliares */
+  --danger: #003641;   /* remoção / erro */
+  --pink:   #003641;   /* botões “remover” especiais e thumb */
+  --teal:   #00A091;   /* botões “adicionar” */
+  --teal-700: #008f82;
+}
+
+/* =========================================================
+   RESET BÁSICO / ACESSIBILIDADE
+   ========================================================= */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+body {
+  background: url('../img/background_agro.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  color: var(--text);
+}
+
+/* Foco visível (teclado) */
+input:focus-visible,
+select:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   LAYOUT / CONTAINERS
+   ========================================================= */
+.app-header,
+.app-footer {
+  background: var(--green);
+  color: #fff;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/*ALTERA ESPAÇO NAS LATERAIS*/
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+
+.logo-header {
+  height: 48px;
+  width: auto;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px #0001;
+}
+
+h2 {
+  color: var(--green);
+  margin-bottom: 15px;
+}
+
+/* Grid utilitário de 2 colunas */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* =========================================================
+   FORMULÁRIOS
+   ========================================================= */
+
+/* Labels apenas quando forem "label-wrapper" (evita interferir em radios/checkbox) */
+label:not(.inline) {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: flex-start;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+/* Inputs de texto (evita afetar checkbox/radio/file) */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="date"],
+input[type="search"],
+input[type="url"] {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  width: 100%;
+}
+
+/* Select com aparência dos inputs */
+select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+}
+select:focus { border-color: var(--green); }
+select option[disabled] { color: #9aa0a6; }
+select:invalid { color: #6b7280; }
+
+/* Estados do select */
+select:disabled {
+  background-color: #f3f4f6;
+  color: #9aa0a6;
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+select.loading {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+  cursor: progress;
+}
+
+/* Mensagens e erro */
+.input-error {
+  border-color: #d93025;
+  background: #fff5f5;
+}
+.field-help {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #666;
+}
+.field-help.error { color: #d93025; }
+
+/* Maiúsculas utilitário */
+.uppercase { text-transform: uppercase; }
+
+/* Radio group */
+.radio-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.radio-group span {
+  font-weight: 600;
+  margin-right: 12px;
+}
+.radio-group label {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+
+/*=================================*/
+
+
+/* === INPUT com cara de SELECT (para o #prop-cidade-search) === */
+.as-select {
+  /* base igual ao seu select */
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  width: 100%;
+
+  /* remove estilos nativos do input e imita select */
+  -webkit-appearance: none;
+  appearance: none;
+
+  /* desenha a setinha à direita (mesma que você usa no select) */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+
+  line-height: normal;
+}
+
+/* Foco igual ao select */
+.as-select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px #cbe9d8;
+  outline: none;
+}
+
+/* Estado desabilitado — igual ao seu select:disabled */
+.as-select:disabled {
+  background-color: #f3f4f6;
+  color: #9aa0a6;
+  cursor: not-allowed;
+  opacity: 0.9;
+
+  /* mantém a setinha visível mesmo desabilitado */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+}
+
+/* (Opcional) placeholder um pouco mais fraco */
+.as-select::placeholder { color: #9aa0a6; }
+
+/* (Opcional) se houver Bootstrap, neutraliza o form-control para esse input */
+#prop-cidade-search.form-control {
+  padding: 10px !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--border) !important;
+  background-color: #fff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  background-size: 14px !important;
+  box-shadow: none !important; /* remove sombras padrão do BS */
+}
+
+
+/* =========================================================
+   BOTÕES
+   ========================================================= */
+.btn {
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1;
+  transition: filter .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+.btn:hover { filter: brightness(0.95); }
+.btn:active { transform: translateY(0.5px); }
+
+.btn-remove { background: var(--danger); }
+
+/* Botões inline (cabeçalho do card) */
+.btn-add-inline,
+.btn-remove-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background-color: #f3f4f6;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1;
+  transition: background-color .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+.btn-add-inline:hover,
+.btn-remove-inline:hover {
+  background-color: #e9ecef;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+}
+.btn-add-inline:active,
+.btn-remove-inline:active { transform: translateY(0.5px); }
+
+.btn-add-inline .btn-icon,
+.btn-remove-inline .btn-icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  color: #f8f8f8;
+}
+
+/* IDs existentes (mantidos por compatibilidade) */
+#btn-add-cliente,
+#btn-add-propriedade { background-color: var(--teal); color: #fff; border: none; }
+#btn-add-cliente:hover,
+#btn-add-propriedade:hover { background-color: var(--teal-700); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+
+#btn-remove-cliente,
+#btn-remove-propriedade { background-color: var(--pink); color: #fff; border: none; }
+#btn-remove-cliente:hover,
+#btn-remove-propriedade:hover { background-color: #003641; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+
+/* Botão gerar PDF */
+#btn-gerar-pdf {
+  background-color: var(--green);
+  color: #fff;
+  font-weight: bold;
+}
+
+
+/* =========================================================
+   TABELAS — NOVO DESIGN MODERNO E ELEGANTE
+   ========================================================= */
+
+/* Wrapper com scroll moderno */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 22px rgba(0,0,0,0.07);
+  padding: 10px;
+}
+
+/* Base para todas as tabelas temáticas */
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  color: #1b1b1b;
+}
+
+/* Cabeçalho moderno */
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) th {
+  background: linear-gradient(180deg, #f0f6f2 0%, #e7f1ec 100%);
+  color: var(--green);
+  font-weight: 700;
+  padding: 14px 10px;
+  border-bottom: 2px solid #d5e6dd;
+  text-align: left;
+  letter-spacing: .3px;
+}
+
+/* Células */
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td {
+  padding: 10px 12px;
+  background: #ffffffaa;
+  border-bottom: 1px solid #ececec;
+  transition: background .15s ease;
+}
+
+/* Linhas com hover suave */
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) tr:hover td {
+  background: #f6faf9;
+}
+
+/* Primeira coluna com leve destaque */
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td:first-child {
+  font-weight: 600;
+  color: #2b4d3f;
+}
+
+/* Ações reduzidas */
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) .btn {
+  background: var(--teal);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) .btn-remove {
+  background: var(--pink);
+  padding: 5px 8px;
+}
+
+/* Inputs internos */
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td input,
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td select {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #dde4e0;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+/* Foco mais bonito */
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td input:focus,
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px #cbe9d8;
+}
+
+/* Alinhamento numérico */
+.right,
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td.right {
+  text-align: right;
+}
+
+/* Larguras originais mantidas (sem alterar sua estrutura) */
+
+/* Alinhamento numérico */
+.right,
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td.right {
+  text-align: right;
+}
+
+/* Botões dentro da coluna Ações (enxutos) */
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) .btn {
+  padding: 6px 10px;
+  font-size: 0.875rem;
+}
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) .btn-remove {
+  padding: 4px 8px;
+}
+
+/* Inputs/Selects internos em células */
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td input,
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td select {
+  width: 100%;
+  max-width: 100%;
+  padding: 6px 10px;
+}
+
+/* Larguras específicas por coluna (mantidas) */
+
+/* Preços */
+.c-cultura   { width: 180px; }
+.c-data      { width: 120px; }
+.c-fonte     { width: 110px; }
+.c-municipio { width: 140px; }
+.c-estado    { width: 80px;  }
+.c-preco     { width: 110px; }
+.c-acoes     { width: 110px; }
+
+/* Agrícola */
+.c-ano-agricola        { width: 105px; }
+.c-cultura-agricola    { width: 160px; }
+.c-und-medida-agricola { width: 105px; }
+.c-area-agricola       { width: 100px; }
+.c-produt-agricola     { width: 100px; }
+.c-producao-agricola   { width: 130px; }
+.c-saldo-agricola      { width: 110px; }
+.c-acoes-agricola      { width: 110px; }
+
+/* Pecuária (corte) */
+.c-ano-safra-corte   { width: 110px; }
+.c-atividade-corte   { width: 160px; }
+.c-und-medida-corte  { width: 100px; }
+.c-ua-ha-corte       { width: 70px; }
+.c-area-util-corte   { width: 60px; }
+.c-quantidade-corte  { width: 70px; }
+.c-peso-corte        { width: 60px; }
+.c-producao          { width: 100px; }
+.c-saldo             { width: 110px; }
+.c-acoes             { width: 110px; }
+
+/* Histórico */
+.c-ano-safra-historico   { width: 100px; }
+.c-cultura-historico     { width: 180px; }
+.c-und-medida-historico  { width: 105px; }
+.c-ua-ha-historico       { width: 71px; }
+.c-area-historico        { width: 71px; }
+.c-produt-historico      { width: 90px; }
+.c-producao-historico    { width: 130px; }
+.c-saldo-historico       { width: 110px; }
+.c-acoes-historico       { width: 110px; }
+
+/* Bens */
+.c-descricao { width: 220px; }
+.c-marca     { width: 180px; }
+.c-ano-fab   { width: 110px; }
+.c-cor       { width: 140px; }
+.c-valor     { width: 130px; }
+
+/* Pecuária (leite) */
+.c-ano-civil-leite     { width: 110px; }
+.c-atividade-leite     { width: 180px; }
+.c-producao-dia-leite  { width: 90px; }
+.c-area-util-leite     { width: 90px; }
+.c-quantidade-leite    { width: 120px; }
+.c-producao-total      { width: 110px; }
+.c-saldo               { width: 110px; }
+.c-acoes               { width: 110px; }
+
+/* Lã */
+.c-ano-safra-la        { width: 110px; }
+.c-atividade-la        { width: 180px; }
+.c-ovelhas-la          { width: 110px; }
+.c-produt-la           { width: 120px; }
+.c-producao-total-la   { width: 130px; }
+.c-saldo-la            { width: 120px; }
+.c-acoes-la            { width: 110px; }
+
+/* Ovos */
+.c-ano-safra-ovos        { width: 110px; }
+.c-atividade-ovos        { width: 180px; }
+.c-aves-ovos             { width: 110px; }
+.c-produt-dia-ovos       { width: 130px; }
+.c-producao-total-ovos   { width: 130px; }
+.c-saldo-ovos            { width: 110px; }
+.c-acoes-ovos            { width: 110px; }
+
+/* =========================================================
+   GALERIA DE IMAGENS
+   ========================================================= */
+
+   
+.galeria-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 50px;
+}
+
+.galeria-item {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 12px #0001;
+}
+
+.galeria-item img {
+  display: block;
+  width: 100%;
+  height: 290px; /* altura final */
+  object-fit: cover;
+}
+
+/* Botão de excluir (thumb) */
+.btn-remove-thumb {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: var(--pink);
+  box-shadow:
+    0 6px 18px rgba(38, 228, 174, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.10);
+  display: grid;
+  place-items: center;
+  opacity: 0.95;
+  transition: transform 150ms ease, opacity 150ms ease, box-shadow 150ms ease;
+}
+.btn-remove-thumb:hover,
+.btn-remove-thumb:focus {
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 24px #008f82, /*Ao Clicar Na Lixeira*/
+    0 3px 8px rgba(0, 0, 0, 0.12);
+  outline: none;
+}
+.btn-remove-thumb svg {
+  width: 18px;
+  height: 18px;
+  fill: #ffffff;
+}
+/* Texto oculto para leitores de tela */
+.btn-remove-thumb .sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}
+
+/* =========================================================
+   SEÇÕES ESPECÍFICAS (clientes / proprietários)
+   ========================================================= */
+#container-proprietarios {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Cabeçalho de card com ações à direita */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Container clientes em 2 colunas */
+#container-clientes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Divisor “Sócio N” com linha */
+.socio-divider {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #374151;
+  margin: 12px 0 6px;
+}
+.socio-divider .label { white-space: nowrap; }
+.socio-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+/* =========================================================
+   TOTALIZADOR
+   ========================================================= */
+.totalizador {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 8px 0;
+  color: #004d2a;
+}
+.totalizador strong {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #000;
+}
+
+/* =========================================================
+   PDF / IMPRESSÃO
+   ========================================================= */
+
+/* Modo exportação (classe aplicada no contêiner raiz quando for gerar PDF) */
+.pdf-export .card,
+.pdf-export .galeria-item {
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
+/* Evitar quebras internas */
+.pdf-export :is(.card, .table-wrapper, table, .galeria-item) {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+/* Ações/última coluna invisíveis (mantém largura) */
+.pdf-export th.c-acoes,
+.pdf-export #tbl-precos td:last-child,
+.pdf-export #tbl-agricola td:last-child,
+.pdf-export #tbl-historico td:last-child,
+.pdf-export #tbl-pecuaria td:last-child,
+.pdf-export #tbl-bens td:last-child,
+.pdf-export .btn-remove,
+.pdf-export .btn-remove-inline,
+.pdf-export .btn-remove-thumb {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Ocultar botões no PDF (genérico) */
+.pdf-export button,
+.pdf-export .btn,
+.pdf-export .btn-add-inline {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Ajustes específicos de galeria no PDF (se necessário, manter grid 2 col.) */
+/* .pdf-export .galeria-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; } */
+
+/* PRINT: configurações de página */
+
+
+
+/* =========================================================
+   PRINT — otimizado p/ A4, margens controladas e tabelas seguras
+   ========================================================= */
+@page {
+  /* Controle real da página PDF */
+  size: A4 portrait;
+  margin: 2mm; /* topo, laterais, rodapé */
+}
+
+@media print {
+
+  /* ===== 1) Reset de fundo e fidelidade de cor ===== */
+  body { background: none !important; }
+  body::before, body::after { content: none !important; display: none !important; }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* ===== 2) Layout do conteúdo na área imprimível ==========================================================================
+     Dica: deixe width auto e controle padding interno
+  */
+  .container,
+  #export-area {
+    width: 100% !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+
+
+  /* Se quiser uma “margem interna” visual, aplique nos cards, não no container */
+  
+  .card {
+    padding: 3mm !important;
+    margin-bottom: 5mm !important;
+  }
+
+
+  /* ===== 3) Anti‑responsivo e segurança das tabelas ===== */
+  /* Nada deve encolher como mobile */
+  * { max-width: none !important; }
+
+  .table-wrapper { overflow: visible !important; }
+
+  table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+  }
+
+
+  th {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow: visible !important;
+    text-overflow: initial !important;
+  }
+
+  /* EXCEÇÕES: colunas textuais que podem quebrar (ajuste os seletores conforme suas classes) */
+  /* Exemplos: descrição, atividade, município, cultura */
+  .c-descricao,
+  .c-atividade-ovos, .c-atividade-la, .c-atividade-leite, .c-atividade-corte, .c-atividade,
+  .c-municipio, .c-cultura, .c-cultura-agricola, .c-cultura-historico {
+    white-space: normal !important;        /* permite quebrar linha */
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;    /* evita “romper” o card */
+  }
+
+  /* Impede grids responsivos de reorganizar colunas no print */
+  .grid-2 { display: block !important; }
+
+  /* ===== 4) Evitar quebras internas feias ===== */
+  /* Não quebre no meio dos cartões/tabelas/itens de galeria */
+  .pdf-export :is(.card, .table-wrapper, table, .galeria-item) {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Seções específicas */
+  .pdf-export #container-clientes { display: block !important; }
+  .pdf-export #container-clientes > * { break-inside: avoid !important; }
+
+  .pdf-export .socio-divider {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  /* ===== 5) Galeria sem corte ===== */
+  .pdf-export .galeria-grid {
+    display: block !important;
+    gap: 0 !important;
+  }
+  .pdf-export .galeria-item {
+    display: block !important;
+    margin: 0 0 8mm 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    overflow: visible !important;
+  }
+  .pdf-export .galeria-item img {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .pdf-export #galeria-imagens {
+    break-after: avoid !important;
+    page-break-after: auto !important;
+  }
+
+  /* ===== 6) Esconder elementos interativos no print ===== */
+  .header-actions,
+  button, .btn,
+  .btn-remove, .btn-remove-thumb, .btn-remove-inline {
+    display: none !important;
+  }
+
+  
+/* Oculta todas as colunas "Ações" na impressão (todas as tabelas) */
+  th.c-acoes,
+  td.c-acoes,
+  th.c-acoes-agricola,
+  td.c-acoes-agricola,
+  th.c-acoes-historico,
+  td.c-acoes-historico,
+  th.c-acoes-ovos,
+  td.c-acoes-ovos,
+  th.c-acoes-la,
+  td.c-acoes-la,
+  th.c-acoes-leite,
+  td.c-acoes-leite,
+  th.c-acoes-corte,
+  td.c-acoes-corte {
+    display: none !important;
+  }
+
+  /* fallback: se por acaso a última coluna for "Ações" mas não tiver classe,
+     esconda a última coluna de tabelas marcadas explicitamente com .tbl-*
+     (use com cautela; remova se afetar outra coluna que não seja Ações) */
+  .tbl-agricola  tr > *:last-child,
+  .tbl-precos    tr > *:last-child,
+  .tbl-historico tr > *:last-child,
+  .tbl-pecuaria  tr > *:last-child,
+  .tbl-ovos      tr > *:last-child,
+  .tbl-la        tr > *:last-child,
+  .tbl-bens      tr > *:last-child {
+    display: none !important;
+  }
+
+
+  .no-print,
+  .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* (Opcional) Condicione ao seu fluxo com body.pdf-export */
+  body.pdf-export .no-print,
+  body.pdf-export .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  
+/* === Galeria — manter 2 colunas no PDF === */
+
+  /* 1) Reative o grid na impressão */
+  .pdf-export .galeria-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6mm !important;              /* espaço entre as imagens no PDF */
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 2) Cada item não quebra dentro dele, mas permite vários na mesma página */
+  .pdf-export .galeria-item {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin: 0 !important;             /* evita aumentar demais a altura total */
+    border: none !important;          /* opcional: remove borda/sombra no PDF */
+    box-shadow: none !important;      /* opcional */
+    background: transparent !important;
+  }
+
+  /* 3) Dê uma altura previsível às imagens para o motor de print conseguir compor a grade
+        Ajuste 65–90mm conforme o resultado que você deseja por página */
+  .pdf-export .galeria-item img {
+    display: block !important;
+    width: 100% !important;
+    height: 70mm !important;          /* <<< ajuste aqui o tamanho desejado */
+    object-fit: cover !important;     /* preenche o card mantendo estética */
+    max-height: none !important;
+  }
+
+  /* 4) Remova a regra antiga que transformava a galeria em bloco na impressão */
+  /* Se não puder remover do código, neutralize aqui: */
+  .pdf-export .galeria-grid[data-force-block="true"] {
+    display: grid !important;
+  }
+
+  /* 5) Se você estava usando margin extra entre itens no print, neutralize: */
+  .pdf-export #galeria-imagens {
+    break-after: auto !important;
+    page-break-after: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+}
+
+
+/*=================================================================*/
+
+
+/* === Extensão de estilo para Bens e Rebanho === */
+/* Base igual às outras tabelas */
+:is(
+  .tbl-agricola, .tbl-precos, .tbl-historico,
+  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
+  .tbl-bens, .tbl-rebanho
+) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  color: #1b1b1b;
+}
+
+/* Cabeçalho */
+:is(
+  .tbl-agricola, .tbl-precos, .tbl-historico,
+  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
+  .tbl-bens, .tbl-rebanho
+) th {
+  background: linear-gradient(180deg, #f0f6f2 0%, #e7f1ec 100%);
+  color: var(--green);
+  font-weight: 700;
+  padding: 14px 10px;
+  border-bottom: 2px solid #d5e6dd;
+  text-align: left;
+  letter-spacing: .3px;
+}
+
+/* Células */
+:is(
+  .tbl-agricola, .tbl-precos, .tbl-historico,
+  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
+  .tbl-bens, .tbl-rebanho
+) td {
+  padding: 10px 12px;
+  background: #ffffffaa;
+  border-bottom: 1px solid #ececec;
+  transition: background .15s ease;
+}
+
+/* Hover */
+:is(
+  .tbl-agricola, .tbl-precos, .tbl-historico,
+  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
+  .tbl-bens, .tbl-rebanho
+) tr:hover td {
+  background: #f6faf9;
+}
+
+/* Primeira coluna em destaque */
+:is(
+  .tbl-agricola, .tbl-precos, .tbl-historico,
+  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
+  .tbl-bens, .tbl-rebanho
+) td:first-child {
+  font-weight: 600;
+  color: #2b4d3f;
+}
+
+/* Inputs/Selects dentro de células (se usar nas futuras edições) */
+:is(
+  .tbl-agricola, .tbl-precos, .tbl-historico,
+  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
+  .tbl-bens, .tbl-rebanho
+) td input,
+:is(
+  .tbl-agricola, .tbl-precos, .tbl-historico,
+  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
+  .tbl-bens, .tbl-rebanho
+) td select {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #dde4e0;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+:is(
+  .tbl-agricola, .tbl-precos, .tbl-historico,
+  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
+  .tbl-bens, .tbl-rebanho
+) td input:focus,
+:is(
+  .tbl-agricola, .tbl-precos, .tbl-historico,
+  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
+  .tbl-bens, .tbl-rebanho
+) td select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px #cbe9d8;
+}
+
+/* (Opcional) Largura de colunas do Rebanho para ficar alinhado */
+.tbl-rebanho th:nth-child(1), .tbl-rebanho td:nth-child(1) { width: 220px; }
+.tbl-rebanho th:nth-child(2), .tbl-rebanho td:nth-child(2) { width: 140px; }
+.tbl-rebanho th:nth-child(3), .tbl-rebanho td:nth-child(3) { width: 120px; text-align: right; }
+
+/* (Opcional) Manter totalizador do Rebanho alinhado à direita */
+#tbl-rebanho tfoot td { background: #ffffffaa; }
+#tbl-rebanho tfoot td:nth-child(2),
+#tbl-rebanho tfoot td:nth-child(3) { text-align: right; }
+
+/* (Já existe) PDF: Bens já tem a coluna Ações oculta; Rebanho não tem Ações — nada a fazer */
+
+
+/* ==================== REBANHO — Botão Remover (pink) ==================== */
+
+/* Mantém compacto como você já fez */
+.tbl-rebanho .btn.btn-remove {
+  padding: 4px 8px;
+  /* 🌸 cor do botão a partir da variável --pink */
+  background-color: var(--pink);
+  color: #fff;
+  border: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  transition: background-color .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+
+/* Hover mais escuro (tom próximo do seu hover já usado em outros pinks) */
+.tbl-rebanho .btn.btn-remove:hover {
+  background-color: #b7b7b7; /*============================================================================Muda Cor Quando Passa O Mouse Em Cima*/
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* Active sutil */
+.tbl-rebanho .btn.btn-remove:active {
+  transform: translateY(0.5px);
+}
+
+/* Acessibilidade: foco visível */
+.tbl-rebanho .btn.btn-remove:focus-visible {
+  outline: 2px solid #272727; /* um destaque suave no tom do pink */
+  outline-offset: 2px;
+}
+
+
+
+/* === CARD TOTAL PERSONALIZADO === */
+.card-total {
+  background: linear-gradient(135deg, #ffffff 0%, #f3f9f5 100%);
+  border-left: 6px solid var(--green);
+  border-radius: 14px;
+  padding: 22px 26px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  margin-top: 30px;
+}
+
+/* Título do card */
+.card-total h2 {
+  font-size: 1.5rem;
+  color: var(--green);
+  margin-bottom: 18px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Cada linha de total */
+.card-total .totalizador {
+  background: #ffffffcc;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  border: 1px solid #e1e7e3;
+  transition: background .2s ease, transform .15s ease;
+}
+
+/* Efeito hover suave */
+.card-total .totalizador:hover {
+  background: #f0f8f5;
+  transform: translateX(3px);
+}
+
+/* Valor em destaque */
+.card-total strong {
+  font-size: 1.2rem;
+  color: #000;
+  font-weight: 700;
+}
