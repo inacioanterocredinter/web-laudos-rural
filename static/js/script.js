@@ -58,16 +58,6 @@ function maskInteger(inputEl) {
   });
 }
 
-
-/* Apenas UMA versão de createSocioDivider() no arquivo */
-function createSocioDivider(n) {
-  const div = document.createElement('div');
-  div.className = 'socio-divider';
-  div.innerHTML = `<span class="label">Sócio ${n}</span>`;
-  return div;
-}
-
-
 /* ============================================================
    PREÇOS DO PRODUTO
    ============================================================ */
@@ -87,6 +77,7 @@ function initPrecos() {
   const tbody = qs('#tbl-precos tbody');
   precosPlanilha.forEach(p => addRowPrecoFromSheet(tbody, ...p));
 }
+
 
 /* Fallback: carrega UFs (IBGE → JSON local) */
 async function carregarUFsComFallback(selectUF) {
@@ -156,6 +147,8 @@ async function carregarMunicipiosComFallback(ufSigla, selectMun) {
     }
   }
 }
+
+
 
 /*LINHA DA PLANILHA PREÇO PRODUTO*/
 
@@ -578,6 +571,10 @@ function initFormMasks() {
   // Telefone
   initTelefoneMask(qs('#cliente-telefone'));
 
+  // Valor Terra Nua (base)
+const terraNuaBase = qs('#prop-terra-nua');
+if (terraNuaBase) maskBRL(terraNuaBase);
+
 
 /* ============================================================
    ESSA ESTRUTURA UM MESMO CAMPO PODE ACEITAR CPF e CNPJ AO MESMO TEMPO E FORMATAR ELES A MEDIDA QUE O USUÁRIO DIGITA
@@ -825,7 +822,8 @@ function addPropriedadeBlock() {
     </label>
 
     <label for="prop-cidade-${idx}">Cidade
-      <input id="prop-cidade-${idx}" placeholder="Buscar cidade..." list="dl-cidades-${idx}" required />
+      <input id="prop-cidade-${idx}" class="form-control as-select"
+            placeholder="Buscar cidade..." list="dl-cidades-${idx}" required />
       <datalist id="dl-cidades-${idx}"></datalist>
     </label>
 
@@ -842,6 +840,12 @@ function addPropriedadeBlock() {
         <option value="CONJUNTO">CONJUNTO</option>
       </select>
     </label>
+
+    <!-- Valor Terra Nua (dinâmico) -->
+      <label for="prop-terra-nua-${idx}">Valor Terra Nua
+          <input type="text" id="prop-terra-nua-${idx}" class="money"
+           inputmode="numeric" placeholder="R$ 0,00" required />
+    </label>
   `;
 
   container.appendChild(bloco);
@@ -852,6 +856,10 @@ function addPropriedadeBlock() {
   attachLettersOnly(qs(`#prop-posse-${idx}`), 'Condição de posse');
   applyCnpjMask(qs(`#prop-cnpj-${idx}`));
   attachMatricula13(qs(`#prop-matricula-${idx}`));
+
+
+  // Valor Terra Nua (dinâmico)
+  maskBRL(qs(`#prop-terra-nua-${idx}`));
 
   // === UF e Cidade (datalist) para o bloco criado ===
   carregarUFsComFallback(qs(`#prop-estado-${idx}`));
@@ -944,7 +952,38 @@ function applyCpfCnpjMask(inputEl) {
   });
 }
 
+/*=============================================================
+    LISTAS DE ANOS SUSPENSAS
+   ============================================================*/
 
+
+/* ============================================================
+   Opções padronizadas de Ano (usadas em Produção Agrícola)
+   ============================================================ */
+const ANO_OPTIONS = `
+  <option value="" disabled selected>Ano</option>
+  <option value="2024 / 2025">2024 / 2025</option>
+  <option value="2025 / 2026">2025 / 2026</option>
+  <option value="2026 / 2027">2026 / 2027</option>
+  <option value="2027 / 2028">2027 / 2028</option>
+  <option value="2028 / 2029">2028 / 2029</option>
+  <option value="2029 / 2030">2029 / 2030</option>
+
+`;
+
+/* ============================================================
+   Opções padronizadas de Ano (usadas em Pecuária)
+   ============================================================ */
+const ANOCIVIL_OPTIONS = `
+  <option value="" disabled selected>Ano</option>
+  <option value="2024">2024</option>
+  <option value="2025">2025</option>
+  <option value="2026">2026</option>
+  <option value="2027">2027</option>
+  <option value="2028">2028</option>
+  <option value="2029">2029</option>
+  <option value="2030">2030</option>
+`;
 
 /* ============================================================
    AGRÍCOLA
@@ -1030,19 +1069,7 @@ function calcAgricolaRow(tr) {
 }
 
 
-/* ============================================================
-   Opções padronizadas de Ano (usadas em Produção Agrícola)
-   ============================================================ */
-const ANO_OPTIONS = `
-  <option value="" disabled selected>Ano</option>
-  <option value="2024 / 2025">2024 / 2025</option>
-  <option value="2025 / 2026">2025 / 2026</option>
-  <option value="2026 / 2027">2026 / 2027</option>
-  <option value="2027 / 2028">2027 / 2028</option>
-  <option value="2028 / 2029">2028 / 2029</option>
-  <option value="2029 / 2030">2029 / 2030</option>
 
-`;
 
 
 /* ============================================================
@@ -1050,7 +1077,7 @@ const ANO_OPTIONS = `
    ============================================================ */
 function initPecuaria() {
   const tbody = qs('#tbl-pecuaria tbody');
-  addRowPecuaria(tbody, '2025 / 2026', 'BOVINOCULTURA DE CORTE', 5, 2.6, 13, 17);
+  addRowPecuaria(tbody, '2025', 'BOVINOCULTURA DE CORTE', 5, 2.6, 13, 17);
 }
 
 
@@ -1076,7 +1103,7 @@ function addRowPecuaria(
   tr.innerHTML = `
     <td>
       <select class="pec-ano" required>
-        ${ANO_OPTIONS}
+        ${ANOCIVIL_OPTIONS}
       </select>
     </td>
 
@@ -1156,7 +1183,7 @@ function calcPecuariaRow(tr) {
 
 function initPecuariaLeite() {
   const tbody = qs('#tbl-pecuaria-leite tbody');
-  addRowPecuariaLeite(tbody, '2025 / 2026', 'PECUÁRIA LEITEIRA', 18, 3.5, 20);
+  addRowPecuariaLeite(tbody, '2025', 'PECUÁRIA LEITEIRA', 18, 3.5, 20);
 }
 
 function addRowPecuariaLeite(
@@ -1171,7 +1198,7 @@ function addRowPecuariaLeite(
   tr.innerHTML = `
     <td>
       <select class="pl-ano" required>
-        ${ANO_OPTIONS}
+        ${ANOCIVIL_OPTIONS}
       </select>
     </td>
 
@@ -1235,23 +1262,6 @@ function calcPecuariaLeiteRow(tr) {
   recalcPecuariaLeiteTotal();
 }
 
-/*
-function calcPecuariaLeiteRow(tr) {
-  const prodDia = num(tr.querySelector('.pl-produt').value);
-  const vacas   = parseInt(num(tr.querySelector('.pl-vacas').value)) || 0;
-
-  const producaoTotal = prodDia * vacas * 30; 
-  const precoLeite = statePrecos.get('PECUÁRIA LEITEIRA') || 0;
-
-  tr.querySelector('.pl-producao-total').value =
-    String(producaoTotal.toFixed(2)).replace('.', ',');
-
-  tr.querySelector('.pl-saldo').value = brl(producaoTotal * precoLeite);
-
-  recalcPecuariaLeiteTotal();
-}
-*/
-
 
 function recalcPecuariaLeiteTotal() {
   const total = qsa('#tbl-pecuaria-leite .pl-saldo').reduce((acc, el) => {
@@ -1264,15 +1274,27 @@ function recalcPecuariaLeiteTotal() {
 
 
 
-
 /* ============================================================
-   PRODUÇÃO DE LÃ
+   PRODUÇÃO CULTURA DIVERSA
    ============================================================ */
 
-function addRowLa(
+// Opções de Unidade (dropdown)
+const UND_OPTIONSCULTURADIVERSA = `
+  <option value="" disabled selected>Unid.</option>
+  <option value="@Boi">@</option>
+  <option value="Kg">KG</option>
+  <option value="Carcaca">CARCAÇA</option>
+  <option value="kg/ha">KG/ha</option>
+  <option value="ton/ha">TON/ha</option>
+  <option value="sacas/ha">SACA/ha</option>
+  <option value="caixas/ha">CAIXA/ha</option>
+`;
+
+function addRowCulturadiversa(
   tbody,
   ano = '',
   atividade = '',
+  tipoatividade = '',
   ovelhas = 0,
   produtividade = 0 // kg de lã por ovelha (período base definido por você)
 ) {
@@ -1280,7 +1302,7 @@ function addRowLa(
   tr.innerHTML = `
     <td>
       <select class="la-ano" required>
-        ${ANO_OPTIONS}
+        ${ANOCIVIL_OPTIONS}
       </select>
     </td>
 
@@ -1289,7 +1311,12 @@ function addRowLa(
              value="${atividade}" placeholder="Digite a atividade" required />
     </td>
 
-    <!-- Nº Ovelhas = INTEIRO -->
+    <td>
+      <input type="text" class="culturadiversa-tipoatvidade uppercase force-uppercase"
+             value="${tipoatividade}" placeholder="Digite o tipo de atividade" required />
+    </td>
+
+    <!-- Qtd Cultura Diversa -->
     <td>
       <input 
         value="${String(Math.trunc(ovelhas))}" 
@@ -1299,6 +1326,13 @@ function addRowLa(
         title="Digite apenas números inteiros"
       />
     </td>
+
+    <td>
+      <select class="la-ano" required>
+        ${UND_OPTIONSCULTURADIVERSA}
+      </select>
+    </td>
+
 
     <!-- Produtividade = DECIMAL -->
     <td>
@@ -1354,104 +1388,12 @@ function calcLaRow(tr) {
 }
 
 function recalcLaTotal() {
-  const total = qsa('#tbl-la .la-saldo').reduce((acc, el) => {
+  const total = qsa('#tbl-culturadiversa .la-saldo').reduce((acc, el) => {
     const v = el.value.replace(/[R$.\s]/g, '').replace(',', '.');
     return acc + (parseFloat(v) || 0);
   }, 0);
 
-  qs('#total-renda-la-tabela').textContent = brl(total);
-}
-
-
-/* ============================================================
-   PRODUÇÃO DE OVOS
-   ============================================================ */
-
-function initOvos() {
-  const tbody = qs('#tbl-ovos tbody');
-  // Linha inicial (opcional)
-  // addRowOvos(tbody, '2025 / 2026', 'PRODUÇÃO DE OVOS', 100, 280);
-}
-
-function addRowOvos(
-  tbody,
-  ano = '',
-  atividade = 'PRODUÇÃO DE OVOS',
-  galinhas = 0,
-  produtividade = 0 // ovos/galinha/mês (ou outro índice que você usa)
-) {
-
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td>
-      <select class="ov-ano" required>
-        ${ANO_OPTIONS}
-      </select>
-    </td>
-
-    <td>
-      <input type="text" class="ov-atividade uppercase force-uppercase"
-             value="${atividade}" placeholder="Digite a atividade" required />
-    </td>
-
-    <td><input value="${String(galinhas)}" class="ov-galinhas" /></td>
-    <td><input value="${String(produtividade).replace('.', ',')}" class="ov-produt" /></td>
-
-    <td><input class="ov-producao-total" readonly /></td>
-    <td><input class="ov-saldo" readonly /></td>
-
-    <td><button class="btn btn-remove" type="button">Remover</button></td>
-  `;
-
-  tbody.appendChild(tr);
-
-  // ATIVIDADE – apenas letras
-  attachLettersOnly(tr.querySelector('.ov-atividade'), 'Atividade');
-
-  // GALINHAS → inteiro
-  maskInteger(tr.querySelector('.ov-galinhas'));
-
-  // PRODUTIVIDADE → decimal
-  maskDecimalBR(tr.querySelector('.ov-produt'));
-
-  // Ano
-  const selAno = tr.querySelector('.ov-ano');
-  if (ano) selAno.value = ano;
-
-  // Cálculo automático
-  const debounced = debounce(() => calcOvosRow(tr), 120);
-  qsa('input, select', tr).forEach(el => el.addEventListener('input', debounced));
-
-  tr.querySelector('.btn-remove').addEventListener('click', () => {
-    tr.remove();
-    recalcOvosTotal();
-  });
-
-  calcOvosRow(tr);
-}
-
-function calcOvosRow(tr) {
-  const qtdGalinhas = parseInt(num(tr.querySelector('.ov-galinhas').value)) || 0;
-  const prodMes = num(tr.querySelector('.ov-produt').value); // ovos por galinha
-  
-  const producao = qtdGalinhas * prodMes;
-
-  // preço cadastrado no card de preços
-  const preco = statePrecos.get('PRODUÇÃO DE OVOS') || 0;
-
-  tr.querySelector('.ov-producao-total').value = String(producao.toFixed(2)).replace('.', ',');
-  tr.querySelector('.ov-saldo').value = brl(producao * preco);
-
-  recalcOvosTotal();
-}
-
-function recalcOvosTotal() {
-  const total = qsa('#tbl-ovos .ov-saldo').reduce((acc, el) => {
-    const v = el.value.replace(/[R$.\s]/g, '').replace(',', '.');
-    return acc + (parseFloat(v) || 0);
-  }, 0);
-
-  qs('#total-renda-ovos-tabela').textContent = brl(total);
+  qs('#total-renda-culturadiversa-tabela').textContent = brl(total);
 }
 
 
@@ -1580,21 +1522,42 @@ function initRebanho() {
     ['Acima de 36 meses', 'Fêmea', 3],
   ];
   const tbody = qs('#tbl-rebanho tbody');
-  itens.forEach(([faixa, sexo, qtd]) => addRowRebanho(tbody, faixa, sexo, qtd));
-  recalcRebanhoTotal();
+
+  // Agora addRowRebanho aceita também o valor unitário (valund). Como na sua planilha
+  // inicial não há valor, passamos 0. Se tiver valores, basta preencher o 4º parâmetro.
+  itens.forEach(([faixa, sexo, qtd, valund = 0]) =>
+    addRowRebanho(tbody, faixa, sexo, qtd, valund)
+  );
+
+  recalcRebanhoTotals();
 }
 
+/* ===== TOTALIZADORES DO REBANHO (ÚNICA FUNÇÃO) =====
+   - total de cabeças (quantidade)
+   - total em R$ (soma de quantidade * valor unitário)
+*/
+function recalcRebanhoTotals() {
+  // Total de cabeças
+  const totalQtd = qsa('.reb-qtd').reduce((acc, inp) => acc + num(inp.value), 0);
+  const elQtd = qs('#total-rebanho');
+  if (elQtd) elQtd.textContent = String(totalQtd);
 
-function recalcRebanhoTotal() {
-  const total = qsa('.reb-qtd').reduce((acc, inp) => acc + num(inp.value), 0);
-  qs('#total-rebanho').textContent = String(total);
+  // Total em R$ (qtd * valor)
+  const totalValor = qsa('#tbl-rebanho tbody tr').reduce((acc, tr) => {
+    const qtd = num(tr.querySelector('.reb-qtd')?.value);
+    const vStr = tr.querySelector('.reb-valor')?.value || '';
+    const v = Number(vStr.replace(/\./g, '').replace(',', '.')) || 0; // BR -> número
+    return acc + (qtd * v);
+  }, 0);
+
+  const elVal = qs('#total-valor-rebanho');
+  if (elVal) elVal.textContent = brl(totalValor);
 }
 
-
-/*BOTÃO REBANHO*/
-
-
-function addRowRebanho(tbody, faixa = '', sexo = '', quantidade = 0) {
+/* ===== ADICIONAR LINHA AO REBANHO =====
+   Mantém a mesma assinatura, com 4º parâmetro opcional (valund)
+*/
+function addRowRebanho(tbody, faixa = '', sexo = '', quantidade = 0, valund = 0) {
   const tr = document.createElement('tr');
   tr.innerHTML = `
     <td><input value="${faixa}" class="reb-faixa" placeholder="Faixa etária" /></td>
@@ -1605,28 +1568,47 @@ function addRowRebanho(tbody, faixa = '', sexo = '', quantidade = 0) {
         <option value="Fêmea" ${sexo === 'Fêmea' ? 'selected' : ''}>Fêmea</option>
       </select>
     </td>
+
+    <!-- Quantidade (inteiro) -->
     <td><input value="${String(quantidade)}" class="reb-qtd" inputmode="numeric" /></td>
+
+    <!-- Valor Unitário (BRL) -->
+    <td><input class="reb-valor" placeholder="R$ 0,00" /></td>
+
     <td><button class="btn btn-remove" type="button">Remover</button></td>
   `;
   tbody.appendChild(tr);
 
-  // ✅ Máscaras/validações
+  // Validações/máscaras
   attachLettersNumbers(tr.querySelector('.reb-faixa'), 'Faixa etária'); // letras+números e acentos
   maskInteger(tr.querySelector('.reb-qtd')); // somente inteiro
 
-  // ✅ Recalcular total ao digitar/trocar
-  const debounced = debounce(() => recalcRebanhoTotal(), 120);
+  // Máscara BRL no valor unitário
+  const valorInput = tr.querySelector('.reb-valor');
+  maskBRL(valorInput);
+
+  // Se vier valor inicial (número), formatamos para BR
+  if (valund) {
+    valorInput.value = Number(valund)
+      .toFixed(2)
+      .replace('.', ',')
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  // Recalcular totais ao digitar/trocar
+  const debounced = debounce(() => recalcRebanhoTotals(), 120);
   tr.querySelector('.reb-qtd').addEventListener('input', debounced);
+  valorInput.addEventListener('input', debounced);
   tr.querySelector('.reb-sexo').addEventListener('change', debounced);
 
-  // ✅ Remover linha (igual ao Histórico)
+  // Remover linha
   tr.querySelector('.btn-remove').addEventListener('click', () => {
     tr.remove();
-    recalcRebanhoTotal();
+    recalcRebanhoTotals();
   });
 
   // Cálculo imediato
-  recalcRebanhoTotal();
+  recalcRebanhoTotals();
 }
 
 
@@ -1675,8 +1657,6 @@ function recalcBensTotal() {
 }
 
 
-
-
 /* ============================================================
    TOTALIZADORES – CÁLCULOS GERAIS (VERSÃO CORRIGIDA)
    ============================================================ */
@@ -1722,30 +1702,19 @@ function recalcPecuariaLeiteTotal() {
 
 /* --------- LÃ --------- */
 function recalcLaTotal() {
-  const total = qsa('#tbl-la .la-saldo').reduce((acc, el) => {
+  const total = qsa('#tbl-culturadiversa .la-saldo').reduce((acc, el) => {
     const v = el.value.replace(/[R$.\s]/g, '').replace(',', '.');
     return acc + (parseFloat(v) || 0);
   }, 0);
 
   
-  document.querySelectorAll('#total-renda-la, #total-renda-la-tabela')
+  document.querySelectorAll('#total-renda-culturadiversa, #total-renda-culturadiversa-tabela')
   .forEach(el => el.textContent = brl(total));
 
   recalcRendaTotal();
 }
 
-/* --------- OVOS --------- */
-function recalcOvosTotal() {
-  const total = qsa('#tbl-ovos .ov-saldo, #tbl-ovos .ovos-saldo').reduce((acc, el) => {
-    // aceita .ov-saldo (seu padrão atual) e .ovos-saldo (compatibilidade)
-    const v = (el.value || el.textContent || '').replace(/[R$.\s]/g, '').replace(',', '.');
-    return acc + (parseFloat(v) || 0);
-  }, 0);
 
-  document.querySelectorAll('#total-renda-ovos, #total-renda-ovos-tabela')
-  .forEach(el => el.textContent = brl(total));
-  recalcRendaTotal();
-}
 
 /* --------- SOMA GERAL (recalcula direto das tabelas) --------- */
 function recalcRendaTotal() {
@@ -1753,10 +1722,10 @@ function recalcRendaTotal() {
   const totalAg     = qsa('#tbl-agricola .ag-saldo').reduce((a, el) => a + (parseFloat(el.value.replace(/[R$.\s]/g, '').replace(',', '.')) || 0), 0);
   const totalCorte  = qsa('#tbl-pecuaria .pec-saldo').reduce((a, el) => a + (parseFloat(el.value.replace(/[R$.\s]/g, '').replace(',', '.')) || 0), 0);
   const totalLeite  = qsa('#tbl-pecuaria-leite .pl-saldo').reduce((a, el) => a + (parseFloat(el.value.replace(/[R$.\s]/g, '').replace(',', '.')) || 0), 0);
-  const totalLa     = qsa('#tbl-la .la-saldo').reduce((a, el) => a + (parseFloat(el.value.replace(/[R$.\s]/g, '').replace(',', '.')) || 0), 0);
-  const totalOvos   = qsa('#tbl-ovos .ov-saldo, #tbl-ovos .ovos-saldo').reduce((a, el) => a + (parseFloat((el.value || el.textContent).replace(/[R$.\s]/g, '').replace(',', '.')) || 0), 0);
+  const totalculturadiversa     = qsa('#tbl-culturadiversa .la-saldo').reduce((a, el) => a + (parseFloat(el.value.replace(/[R$.\s]/g, '').replace(',', '.')) || 0), 0);
 
-  const totalPecuaria = totalCorte + totalLeite + totalLa + totalOvos;
+
+  const totalPecuaria = totalCorte + totalLeite + totalculturadiversa;
 
   // Atualiza o card de totais
   const outAg     = qs('#renda-total-agricola');   if (outAg)     outAg.textContent = brl(totalAg);
@@ -1769,12 +1738,8 @@ function recalcAll() {
   qsa('#tbl-agricola tbody tr').forEach(tr => calcAgricolaRow(tr));
   qsa('#tbl-pecuaria tbody tr').forEach(tr => calcPecuariaRow(tr));
   qsa('#tbl-pecuaria-leite tbody tr').forEach(tr => calcPecuariaLeiteRow(tr));
-  qsa('#tbl-la tbody tr').forEach(tr => calcLaRow(tr));
-  qsa('#tbl-ovos tbody tr').forEach(tr => calcOvosRow(tr));
+  qsa('#tbl-culturadiversa tbody tr').forEach(tr => calcLaRow(tr));
 }
-
-
-
 
 
 
@@ -1782,69 +1747,55 @@ function recalcAll() {
    Botões "Adicionar"
    ============================================================ */
 function bindAddButtons() {
-
-  // Dados do Cliente — novo botão
   const btnAddCliente = qs('#btn-add-cliente');
   if (btnAddCliente) btnAddCliente.addEventListener('click', addClientePair);
 
-
-  
-  // NOVO: Botão "Remover Produtor Rural"
   const btnRemoveCliente = qs('#btn-remove-cliente');
   if (btnRemoveCliente) btnRemoveCliente.addEventListener('click', removeClientePair);
 
-
-
-  // Rebanho — adiciona linha
   const btnAddRebanho = qs('#btn-add-rebanho');
-  if (btnAddRebanho) {
-    btnAddRebanho.addEventListener('click', () =>
-      addRowRebanho(qs('#tbl-rebanho tbody'))
-    );
-  }
-
-
-
-  // Preços
-  qs('#btn-add-preco').addEventListener('click', addRowPrecoEmpty);
-
-  
- // Botões Agro-Leiteira
-  qs('#btn-add-pecuaria-leite').addEventListener('click', () =>
-  addRowPecuariaLeite(qs('#tbl-pecuaria-leite tbody'))
+  if (btnAddRebanho) btnAddRebanho.addEventListener('click', () =>
+    addRowRebanho(qs('#tbl-rebanho tbody'))
   );
 
+  const btnAddPreco = qs('#btn-add-preco');
+  if (btnAddPreco) btnAddPreco.addEventListener('click', addRowPrecoEmpty);
 
-  // Botões Agro-Lã
-  qs('#btn-add-la').addEventListener('click', () =>
-  addRowLa(qs('#tbl-la tbody'))
+  const btnAddPecLeite = qs('#btn-add-pecuaria-leite');
+  if (btnAddPecLeite) btnAddPecLeite.addEventListener('click', () =>
+    addRowPecuariaLeite(qs('#tbl-pecuaria-leite tbody'))
   );
 
-  // Botões Agro-Ovos
-  qs('#btn-add-ovos').addEventListener('click', () =>
-  addRowOvos(qs('#tbl-ovos tbody'))
+  const btnAddLa = qs('#btn-add-culturadiversa');
+  if (btnAddLa) btnAddLa.addEventListener('click', () =>
+    addRowCulturadiversa(qs('#tbl-culturadiversa tbody'))
   );
 
+  // ✅ Propriedade (versões seguras)
+  const btnAddProp = qs('#btn-add-propriedade');
+  if (btnAddProp) btnAddProp.addEventListener('click', addPropriedadeBlock);
 
-
-  //Botões Adiciona e Remove Propriedade
-  qs('#btn-add-propriedade').addEventListener('click', addPropriedadeBlock);
-  qs('#btn-remove-propriedade').addEventListener('click', removePropriedadeBlock);
-
-
-
+  const btnRemoveProp = qs('#btn-remove-propriedade');
+  if (btnRemoveProp) btnRemoveProp.addEventListener('click', removePropriedadeBlock);
 
   // Demais
-  qs('#btn-add-agricola').addEventListener('click', () =>
+  const btnAddAgr = qs('#btn-add-agricola');
+  if (btnAddAgr) btnAddAgr.addEventListener('click', () =>
     addRowAgricola(qs('#tbl-agricola tbody'))
   );
-  qs('#btn-add-historico').addEventListener('click', () =>
+
+  const btnAddHist = qs('#btn-add-historico');
+  if (btnAddHist) btnAddHist.addEventListener('click', () =>
     addRowHistorico(qs('#tbl-historico tbody'), '', '', '', '', '', '')
   );
-  qs('#btn-add-pecuaria').addEventListener('click', () =>
+
+  const btnAddPec = qs('#btn-add-pecuaria');
+  if (btnAddPec) btnAddPec.addEventListener('click', () =>
     addRowPecuaria(qs('#tbl-pecuaria tbody'))
   );
-  qs('#btn-add-bem').addEventListener('click', () =>
+
+  const btnAddBem = qs('#btn-add-bem');
+  if (btnAddBem) btnAddBem.addEventListener('click', () =>
     addRowBem(qs('#tbl-bens tbody'))
   );
 }
@@ -2554,11 +2505,11 @@ function maskDecimalBR(inputEl) {
 
 
 /* ============================================================
-   LÃ – Inicialização (sem linha inicial por padrão)
+   Cultura Diversa – Inicialização (sem linha inicial por padrão)
    ============================================================ */
-function initLa() {
+function initCulturadiversa() {
   // Se quiser linha inicial automática, descomente a linha abaixo:
-  // addRowLa(qs('#tbl-la tbody'), '2025 / 2026', 'PRODUÇÃO DE LÃ', 0, 0);
+  // addRowCulturadiversa(qs('#tbl-la tbody'), '2025 / 2026', 'PRODUÇÃO DE LÃ', 0, 0);
 }
 
 
@@ -2597,6 +2548,19 @@ document.addEventListener('input', (e) => {
   }
 });
 
+/* ============================================================
+   Boot (Data Hoje)
+   ============================================================ */
+document.addEventListener("DOMContentLoaded", () => {
+  const inputData = document.querySelector("#cliente-data");
+  if (inputData) {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoje.getDate()).padStart(2, "0");
+    inputData.value = `${ano}-${mes}-${dia}`;
+  }
+});
 
 
 function boot() {
@@ -2606,8 +2570,7 @@ function boot() {
   initHistorico();
   initPecuaria();         // corte
   initPecuariaLeite();    // leite  ✅ garantir chamada
-  initLa();               // lã      ✅ agora existe
-  initOvos();
+  initCulturadiversa();               // lã      ✅ agora existe
   initRebanho();
   initBens();
 
@@ -2624,7 +2587,14 @@ function boot() {
   initGaleria();
 
   // PDF
-  initPDF();
+  //initPDF();
+}
+
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(console.error);
+  });
 }
 
 window.addEventListener('DOMContentLoaded', boot);

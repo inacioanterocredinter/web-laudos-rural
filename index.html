@@ -56,7 +56,7 @@
     <div id="container-clientes" class="grid-2">
       <!-- Nome -->
       <label for="cliente-nome">Nome do(a) Produtor / Produtora
-        <input type="text" id="cliente-nome" class="uppercase force-uppercase"
+        <input type="text" id="cliente-nome"
                placeholder="Digite o nome do(a) Produtor(a)"
                pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$" required />
       </label>
@@ -93,12 +93,9 @@
 
 <!-- PROPRIEDADE -->
 <section class="card">
-  <!-- Cabeçalho com título à esquerda e botões à direita -->
   <div class="card-header">
     <h2>Propriedade</h2>
-
     <div class="header-actions">
-      <!-- Adicionar Propriedade -->
       <button type="button" class="btn btn-add-inline" id="btn-add-propriedade" aria-label="Adicionar Propriedade">
         <span class="btn-icon" aria-hidden="true" focusable="false">
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
@@ -108,7 +105,6 @@
         <span class="btn-text">Adicionar Propriedade</span>
       </button>
 
-      <!-- Remover Propriedade -->
       <button type="button" class="btn btn-remove-inline" id="btn-remove-propriedade" aria-label="Remover Propriedade">
         <span class="btn-icon" aria-hidden="true" focusable="false">
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
@@ -120,12 +116,11 @@
     </div>
   </div>
 
+  <!-- Base da propriedade -->
   <form id="form-propriedade">
-    <!-- Container que agrupa o bloco base e os blocos dinâmicos -->
     <div id="container-propriedade" style="margin-top: 8px;">
       <!-- BLOCO BASE (sem divisória) -->
       <div class="grid-2 propriedade-bloco propriedade-bloco--base" data-idx="base">
-        <!-- Nome + Área -->
         <label for="prop-nome">Nome da propriedade
           <input type="text" id="prop-nome" class="uppercase force-uppercase"
                  placeholder="Digite o nome da propriedade"
@@ -137,7 +132,6 @@
                  inputmode="decimal" pattern="^\\d+(?:[.,]\\d+)?$" required />
         </label>
 
-        <!-- Posse + CNPJ -->
         <label for="prop-posse">Condição de posse
           <input type="text" id="prop-posse" placeholder="Digite a condição de posse (ex.: PROPRIETÁRIO)"
                  pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\\s'-]+$" required />
@@ -149,18 +143,16 @@
           <small id="prop-cnpj-help" class="field-help"></small>
         </label>
 
-        <!-- Estado + Cidade -->
         <label for="prop-estado">
           Estado
           <select id="prop-estado" name="prop-estado" required>
             <option value="" disabled selected>Selecione o estado (UF)</option>
-            <!-- UFs via JS -->
           </select>
         </label>
 
         <label for="prop-cidade-search">
           Cidade
-          <input id="prop-cidade-search" class="form-control"  class="as-select" placeholder="Buscar cidade..."
+          <input id="prop-cidade-search" class="form-control" placeholder="Buscar cidade..."
                  list="dl-cidades" autocomplete="off" disabled required />
           <datalist id="dl-cidades"></datalist>
           <select id="prop-cidade" name="prop-cidade" required style="display:none;">
@@ -168,51 +160,58 @@
           </select>
         </label>
 
-        <!-- Matrícula -->
         <label for="prop-matricula">Matrícula
           <input type="text" id="prop-matricula" placeholder="Digite a matrícula"
                  inputmode="numeric" autocomplete="off" maxlength="13" required />
           <small id="prop-matricula-help" class="field-help"></small>
         </label>
 
-      <!-- Situação da Propriedade -->
-      <label for="cliente-porte">Situação Propridade
-        <select id="cliente-porte" required>
-          <option value="" disabled selected>Selecione a Situação Da Propriedade</option>
-          <option value="INDIVIDUAL">INDIVIDUAL</option>
-          <option value="COJUNTO">CONJUNTO</option>
-        </select>
-      </label>
+        <label for="prop-situacao">Situação da Propriedade
+          <select id="prop-situacao" required>
+            <option value="" disabled selected>Selecione a Situação da Propriedade</option>
+            <option value="INDIVIDUAL">INDIVIDUAL</option>
+            <option value="CONJUNTO">CONJUNTO</option>
+          </select>
+        </label>
+
+        <label for="prop-terra-nua">Valor Terra Nua
+          <input type="text" id="prop-terra-nua" class="money" inputmode="numeric" placeholder="R$ 0,00" required />
+        </label>
+      </div><!-- fim bloco base -->
+    </div><!-- fim container-propriedade -->
   </form>
 </section>
 
 
+<!-- TABELA DE PREÇOS -->
+<section class="card">
+  <div class="card-header">
+    <h2>Preços do Produto 💵</h2>
+    <button type="button" class="btn" id="btn-add-preco">Adicionar preço</button>
+  </div>
 
-    <!-- TABELA DE PREÇOS -->
-    <section class="card">
-      <div class="card-header">
-        <h2>Preços do Produto 💵</h2>
-        <button type="button" class="btn" id="btn-add-preco">Adicionar preço</button>
-      </div>
-      <table id="tbl-precos" class="tbl-precos">
-        <thead>
-          <tr>
-            <th class="c-cultura">Cultura / Atividade</th>
-            <th class="c-data">Data</th>
-            <th class="c-fonte">Fonte</th>
-            <th class="c-estado">Estado</th>
-            <th class="c-municipio">Município</th>
-            <th class="c-preco">Preço atual</th>
-            <th class="c-acoes">Ações</th>
-          </tr>
-        </thead>
+  <!-- ✅ Wrapper para impedir estouro -->
+  <div class="table-wrapper">
+    <table id="tbl-precos" class="tbl-precos">
+      <thead>
+        <tr>
+          <th class="c-cultura">Cultura / Atividade</th>
+          <th class="c-data">Data</th>
+          <th class="c-fonte">Fonte</th>
+          <th class="c-estado">Estado</th>
+          <th class="c-municipio">Município</th>
+          <th class="c-preco">Preço atual</th>
+          <th class="c-acoes">Ações</th>
+        </tr>
+      </thead>
 
-        <tbody>
-          <!-- Linhas adicionadas via JS -->
-        </tbody>
-
-        </table>
-    </section>
+      <tbody>
+        <!-- Linhas adicionadas via JS -->
+      </tbody>
+    </table>
+  </div>
+</section>
+   
 
 <!-- PRODUÇÃO AGRÍCOLA -->
 <section class="card">
@@ -245,7 +244,7 @@
       
       <tfoot>
         <tr>
-          <td colspan="7" class="right"><strong>Total Renda Agrícola</strong></td>
+          <td colspan="0" class="right"><strong>Total Renda Agrícola</strong></td>
           <td><strong id="total-renda-agricola">R$ 0,00</strong></td>
         </tr>
       </tfoot>
@@ -267,16 +266,16 @@
     <table id="tbl-pecuaria" class="tbl-pecuaria">
       <thead>
         <tr>
-          <th class="c-ano-safra-corte">Ano Safra</th>
+          <th class="c-ano-civil-corte">Ano Civil</th>
           <th class="c-atividade-corte">Atividade</th>
           <th class="c-und-medida-corte">Und. Medida</th> <!-- nome exato, sem espaço -->
           <th class="c-ua-ha-corte">UA/ha</th>
           <th class="c-area-util-corte">Á. Utili.</th>
           <th class="c-quantidade-corte">Qtde</th>
           <th class="c-peso-corte">Peso</th>
-          <th class="c-producao">Produção</th>
-          <th class="c-saldo">Saldo</th>
-          <th class="c-acoes">Ações</th>
+          <th class="c-producao-corte">Produção</th>
+          <th class="c-saldo-corte">Saldo</th>
+          <th class="c-acoes-corte">Ações</th>
         </tr>
       </thead>
 
@@ -288,7 +287,7 @@
       <tfoot>
         <tr>
           <!-- 5 colunas até Produção -->
-          <td colspan="9" class="right"><strong>Total Renda Agropecuária</strong></td>
+          <td colspan="0" class="right"><strong>Total Renda Agropecuária</strong></td>
           <td><strong id="total-renda-agropecuaria-tabela">R$ 0,00</strong></td>
         </tr>
       </tfoot>
@@ -313,9 +312,9 @@
           <th class="c-producao-dia-leite">Produt. (L/dia)</th>
           <th class="c-area-util-leite">Á. Utili.</th>
           <th class="c-quantidade-leite">Vacas em Lactação</th>
-          <th class="c-producao-total">Produção Total</th>
-          <th class="c-saldo">Saldo</th>
-          <th class="c-acoes">Ações</th>
+          <th class="c-producao-total-leite">Produção Total</th>
+          <th class="c-saldo-leite">Saldo</th>
+          <th class="c-acoes-leite">Ações</th>
         </tr>
       </thead>
 
@@ -325,7 +324,7 @@
 
       <tfoot>
         <tr>
-          <td colspan="7" class="right"><strong>Total renda leiteira</strong></td>
+          <td colspan="0" class="right"><strong>Total renda leiteira</strong></td>
           <td><strong id="total-renda-leiteira-tabela">R$ 0,00</strong></td>
         </tr>
       </tfoot>
@@ -336,25 +335,27 @@
 
 
 
-<!-- PRODUÇÃO DE LÃ -->
+<!-- PRODUÇÃO CULTURA DIVERSA -->
 <section class="card">
   <div class="card-header">
-    <h2>Pecuária De Lã 🐑</h2>
-    <button type="button" class="btn" id="btn-add-la">Adicionar linha</button>
+    <h2>Cultura Diversa</h2>
+    <button type="button" class="btn" id="btn-add-culturadiversa">Adicionar linha</button>
   </div>
 
   <div class="table-wrapper">
-    <table id="tbl-la" class="tbl-la">
+    <table id="tbl-culturadiversa" class="tbl-culturadiversa">
 
       <thead>
         <tr>
-          <th class="c-ano-safra-la">Ano Safra</th>
-          <th class="c-atividade-la">Atividade</th>
-          <th class="c-ovelhas-la">Nº Ovelhas</th>
-          <th class="c-produt-la">Produt. (kg/ovelha)</th>
-          <th class="c-producao-total-la">Produção Total</th>
-          <th class="c-saldo-la">Saldo</th>
-          <th class="c-acoes-la">Ações</th>
+          <th class="c-ano-safra-culturadiversa">Ano Civil</th>
+          <th class="c-atividade-culturadiversa">Atividade</th>
+          <th class="c.tipo-culturadiversa">Tipo Cultura</th>
+          <th class="c-qtd-culturadiversa">Qtd </th>
+          <th class="c-unidade-culturadiversa">Und. Medida</th>
+          <th class="c-produt-culturadiversa">Produtividade</th>
+          <th class="c-producao-total-culturadiversa">Produção Total</th>
+          <th class="c-saldo-culturadiversa">Saldo</th>
+          <th class="c-acoes-culturadiversa">Ações</th>
         </tr>
       </thead>
 
@@ -364,53 +365,14 @@
 
       <tfoot>
         <tr>
-          <td colspan="6" class="right"><strong>Total Renda Lã</strong></td>
-          <td><strong id="total-renda-la-tabela">R$ 0,00</strong></td>
+          <td colspan="0" class="right"><strong>Total Renda Cultura Diversa</strong></td>
+          <td><strong id="total-renda-culturadiversa-tabela">R$ 0,00</strong></td>
         </tr>
       </tfoot>
 
     </table>
   </div>
 </section>
-
-
-<!-- PRODUÇÃO DE OVOS -->
-<section class="card">
-  <div class="card-header">
-    <h2>Avicultura De Postura 🥚</h2>
-    <button type="button" class="btn" id="btn-add-ovos">Adicionar linha</button>
-  </div>
-
-  <div class="table-wrapper">
-    <table id="tbl-ovos" class="tbl-ovos">
-
-      <thead>
-        <tr>
-          <th class="c-ano-safra-ovos">Ano Safra</th>
-          <th class="c-atividade-ovos">Atividade</th>
-          <th class="c-aves-ovos">Nº de Aves</th>
-          <th class="c-produt-dia-ovos">Produt. (ovos/dia)</th>
-          <th class="c-producao-total-ovos">Produção Total</th>
-          <th class="c-saldo-ovos">Saldo</th>
-          <th class="c-acoes-ovos">Ações</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <!-- Linhas adicionadas via JS -->
-      </tbody>
-
-      <tfoot>
-        <tr>
-          <td colspan="6" class="right"><strong>Total renda ovos</strong></td>
-          <td><strong id="total-renda-ovos-tabela">R$ 0,00</strong></td>
-        </tr>
-      </tfoot>
-
-    </table>
-  </div>
-</section>
-
 
 
     <!-- HISTÓRICO -->
@@ -441,34 +403,21 @@
       </table>
     </section>
 
-
-
     
 <section class="card card-total">
   <h2>Renda Total Agrícola e Pecuária</h2>
-
-  <p class="totalizador">Subtotal Pecuária 🐮🥩 | 🐷🍖 | 🐔🍗 :
-    <strong id="total-renda-agropecuaria">R$ 0,00</strong>
-  </p>
-
-  <p class="totalizador">Subtotal Leiteira 🐄🥛 :
-    <strong id="total-renda-leiteira">R$ 0,00</strong>
-  </p>
-
-  <p class="totalizador">Subtotal Lã 🐑 :
-    <strong id="total-renda-la">R$ 0,00</strong>
-  </p>
-
-  <p class="totalizador">Subtotal Ovos 🥚 :
-    <strong id="total-renda-ovos">R$ 0,00</strong>
-  </p>
 
   <p class="totalizador">Total Agrícola 🌾 :
     <strong id="renda-total-agricola">R$ 0,00</strong>
   </p>
 
-  <p class="totalizador">Total Pecuária :
+  <p class="totalizador">Total Pecuária : 🐮🥩|🐷🍖|🐔🍗|🐄🥛
     <strong id="renda-total-pecuaria">R$ 0,00</strong>
+  </p>
+
+  <!-- Subtotal Cultura Diversa-->
+  <p class="totalizador">Total Diversos :
+    <strong id="total-renda-diversa">R$ 0,00</strong>
   </p>
 
   <p class="totalizador">Total Geral 💰 :
@@ -492,7 +441,8 @@
         <tr>
           <th>Faixa etária</th>
           <th>Sexo</th>
-          <th>Quantidade</th>
+          <th>Quantidade Und.</th>
+          <th>Valor Und.</th>
           <th class="c-acoes">Ações</th> <!-- opcional, só para rotular -->
         </tr>
       </thead>
@@ -503,6 +453,7 @@
         <tr>
           <td colspan="2" class="right"><strong>Total</strong></td>
           <td><strong id="total-rebanho">0</strong></td>
+          <td><strong id="total-valor-rebanho">0</strong></td>
         </tr>
       </tfoot>
     </table>
@@ -566,15 +517,29 @@
 <section class="card">
   <h2>Dados do Agrônomo</h2>
 
-  <form id="form-cliente" class="grid-2">
-
-    <label for="cliente-resp-tec">Responsável técnico
-      <input type="text" id="cliente-resp-tec" class="uppercase force-uppercase" placeholder="Digite o nome do responsável técnico" pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$" required/>
+  <form id="form-agronomo" class="grid-1">
+    
+    <label for="cliente-resp-tec">Responsável Técnico
+      <input type="text" id="cliente-resp-tec"
+             placeholder="Digite o nome do responsável técnico"
+             pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$" required />
     </label>
 
     <label for="cliente-crea">CREA / CFTA
-      <input type="text" id="cliente-crea" placeholder="Digite CREA ou CFTA" required />
+      <input type="text" id="cliente-crea"
+             placeholder="Digite CREA ou CFTA" required />
     </label>
+
+    <label for="cliente-observacao">Observação
+      <input type="text" id="cliente-observacao"
+             placeholder="Digite sua observação caso necessário" />
+    </label>
+
+    <label for="cliente-data">Data Geração Relátorio
+      <input type="date" id="cliente-data" readonly />
+    </label>
+
+
   </form>
 </section>
 
@@ -594,8 +559,8 @@
   </footer>
     <!-- JS linkado corretamente -->
 
-    <!-- Biblioteca html2pdf -->
-    <script src="static/js/html2pdf.bundle.min.js"></script>
+    <!-- Biblioteca html2pdf 
+    <script src="static/js/html2pdf.bundle.min.js"></script-->
 
     <!-- Importa o script no final do body -->
     <script src="static/js/script.js" ></script>

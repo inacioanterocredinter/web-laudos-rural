@@ -1,9 +1,9 @@
-
 /* =========================================================
    FONTES (dica: prefira <link> no HTML para melhor performance)
    ========================================================= */
 @import url('https://fonts.googleapis.com/css?family=Montserrat:700&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600&display=swap');
+
 
 /* =========================================================
    VARIÁVEIS / TEMA
@@ -23,6 +23,7 @@
   --teal-700: #008f82;
 }
 
+
 /* =========================================================
    RESET BÁSICO / ACESSIBILIDADE
    ========================================================= */
@@ -31,6 +32,7 @@
 *::after { box-sizing: border-box; }
 
 html, body { height: 100%; }
+
 body {
   background: url('../img/background_agro.jpg') no-repeat center center fixed;
   background-size: cover;
@@ -46,6 +48,7 @@ select:focus-visible,
   outline-offset: 2px;
 }
 
+
 /* =========================================================
    LAYOUT / CONTAINERS
    ========================================================= */
@@ -59,7 +62,7 @@ select:focus-visible,
   gap: 15px;
 }
 
-/*ALTERA ESPAÇO NAS LATERAIS*/
+/* ALTERA ESPAÇO NAS LATERAIS */
 .container {
   max-width: 1200px;
   margin: auto;
@@ -96,6 +99,7 @@ h2 {
 @media (max-width: 768px) {
   .grid-2 { grid-template-columns: 1fr; }
 }
+
 
 /* =========================================================
    FORMULÁRIOS
@@ -134,16 +138,18 @@ select {
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #fff;
+  color: #fff;
   color: var(--text);
   width: 100%;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  /*background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");*/
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 14px;
 }
+
 select:focus { border-color: var(--green); }
 select option[disabled] { color: #9aa0a6; }
 select:invalid { color: #6b7280; }
@@ -156,8 +162,7 @@ select:disabled {
   opacity: 0.9;
 }
 select.loading {
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  /* Ícone de loading (se usar) */
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 14px;
@@ -202,9 +207,7 @@ select.loading {
 }
 
 
-/*=================================*/
-
-
+/* ================================= */
 /* === INPUT com cara de SELECT (para o #prop-cidade-search) === */
 .as-select {
   /* base igual ao seu select */
@@ -220,7 +223,7 @@ select.loading {
   appearance: none;
 
   /* desenha a setinha à direita (mesma que você usa no select) */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  /*background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");*/
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 14px;
@@ -241,9 +244,6 @@ select.loading {
   color: #9aa0a6;
   cursor: not-allowed;
   opacity: 0.9;
-
-  /* mantém a setinha visível mesmo desabilitado */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
 }
 
 /* (Opcional) placeholder um pouco mais fraco */
@@ -255,7 +255,6 @@ select.loading {
   border-radius: 8px !important;
   border: 1px solid var(--border) !important;
   background-color: #fff !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
   background-position: right 10px center !important;
   background-size: 14px !important;
@@ -350,7 +349,7 @@ select.loading {
 }
 
 /* Base para todas as tabelas temáticas */
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
@@ -358,7 +357,7 @@ select.loading {
 }
 
 /* Cabeçalho moderno */
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) th {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) th {
   background: linear-gradient(180deg, #f0f6f2 0%, #e7f1ec 100%);
   color: var(--green);
   font-weight: 700;
@@ -369,7 +368,7 @@ select.loading {
 }
 
 /* Células */
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td {
   padding: 10px 12px;
   background: #ffffffaa;
   border-bottom: 1px solid #ececec;
@@ -377,31 +376,31 @@ select.loading {
 }
 
 /* Linhas com hover suave */
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) tr:hover td {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) tr:hover td {
   background: #f6faf9;
 }
 
 /* Primeira coluna com leve destaque */
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td:first-child {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td:first-child {
   font-weight: 600;
   color: #2b4d3f;
 }
 
 /* Ações reduzidas */
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) .btn {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) .btn {
   background: var(--teal);
   padding: 6px 10px;
   border-radius: 6px;
   font-size: 0.8rem;
 }
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) .btn-remove {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) .btn-remove {
   background: var(--pink);
   padding: 5px 8px;
 }
 
 /* Inputs internos */
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td input,
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td select {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td input,
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td select {
   width: 100%;
   padding: 6px 10px;
   border-radius: 8px;
@@ -411,44 +410,27 @@ select.loading {
 }
 
 /* Foco mais bonito */
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td input:focus,
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td select:focus {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tblculturadiversa, .tbl-bens, .tbl-rebanho) td select:focus,
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td input:focus {
   border-color: var(--green);
   box-shadow: 0 0 0 2px #cbe9d8;
 }
 
 /* Alinhamento numérico */
 .right,
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td.right {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td.right {
   text-align: right;
-}
-
-/* Larguras originais mantidas (sem alterar sua estrutura) */
-
-/* Alinhamento numérico */
-.right,
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td.right {
-  text-align: right;
-}
-
-/* Botões dentro da coluna Ações (enxutos) */
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) .btn {
-  padding: 6px 10px;
-  font-size: 0.875rem;
-}
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) .btn-remove {
-  padding: 4px 8px;
 }
 
 /* Inputs/Selects internos em células */
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td input,
-:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos) td select {
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td input,
+:is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td select {
   width: 100%;
   max-width: 100%;
   padding: 6px 10px;
 }
 
-/* Larguras específicas por coluna (mantidas) */
+/* Larguras específicas por coluna (uso normal; no PDF serão neutralizadas) */
 
 /* Preços */
 .c-cultura   { width: 180px; }
@@ -460,26 +442,26 @@ select.loading {
 .c-acoes     { width: 110px; }
 
 /* Agrícola */
-.c-ano-agricola        { width: 105px; }
-.c-cultura-agricola    { width: 160px; }
+.c-ano-agricola        { width: 120px; }
+.c-cultura-agricola    { width: 150px; }
 .c-und-medida-agricola { width: 105px; }
-.c-area-agricola       { width: 100px; }
-.c-produt-agricola     { width: 100px; }
-.c-producao-agricola   { width: 130px; }
-.c-saldo-agricola      { width: 110px; }
+.c-area-agricola       { width: 90px; }
+.c-produt-agricola     { width: 90px; }
+.c-producao-agricola   { width: 120px; }
+.c-saldo-agricola      { width: 130px; }
 .c-acoes-agricola      { width: 110px; }
 
 /* Pecuária (corte) */
-.c-ano-safra-corte   { width: 110px; }
+.c-ano-civil-corte   { width: 120px; }
 .c-atividade-corte   { width: 160px; }
 .c-und-medida-corte  { width: 100px; }
 .c-ua-ha-corte       { width: 70px; }
 .c-area-util-corte   { width: 60px; }
 .c-quantidade-corte  { width: 70px; }
 .c-peso-corte        { width: 60px; }
-.c-producao          { width: 100px; }
-.c-saldo             { width: 110px; }
-.c-acoes             { width: 110px; }
+.c-producao-corte    { width: 100px; }
+.c-saldo-corte       { width: 110px; }
+.c-acoes-corte       { width: 110px; }
 
 /* Histórico */
 .c-ano-safra-historico   { width: 100px; }
@@ -500,7 +482,7 @@ select.loading {
 .c-valor     { width: 130px; }
 
 /* Pecuária (leite) */
-.c-ano-civil-leite     { width: 110px; }
+.c-ano-civil-leite     { width: 130px; }
 .c-atividade-leite     { width: 180px; }
 .c-producao-dia-leite  { width: 90px; }
 .c-area-util-leite     { width: 90px; }
@@ -509,29 +491,21 @@ select.loading {
 .c-saldo               { width: 110px; }
 .c-acoes               { width: 110px; }
 
-/* Lã */
-.c-ano-safra-la        { width: 110px; }
-.c-atividade-la        { width: 180px; }
-.c-ovelhas-la          { width: 110px; }
-.c-produt-la           { width: 120px; }
-.c-producao-total-la   { width: 130px; }
-.c-saldo-la            { width: 120px; }
-.c-acoes-la            { width: 110px; }
+/* Cultura Diversa */
+.c-ano-safra-culturadiversa       { width: 110px; }
+.c-atividade-culturadiversa       { width: 180px; }
+.c-tipo-culturadiversa            { width: 180px; }
+.c-unidade-culturadiversa         { width: 100px; }
+.c-qtd-culturadiversa             { width: 110px; }
+.c-produt-culturadiversa          { width: 120px; }
+.c-producao-total-culturadiversa  { width: 130px; }
+.c-saldo-culturadiversa           { width: 120px; }
+.c-acoes-culturadiversa           { width: 110px; }
 
-/* Ovos */
-.c-ano-safra-ovos        { width: 110px; }
-.c-atividade-ovos        { width: 180px; }
-.c-aves-ovos             { width: 110px; }
-.c-produt-dia-ovos       { width: 130px; }
-.c-producao-total-ovos   { width: 130px; }
-.c-saldo-ovos            { width: 110px; }
-.c-acoes-ovos            { width: 110px; }
 
 /* =========================================================
    GALERIA DE IMAGENS
    ========================================================= */
-
-   
 .galeria-grid {
   margin-top: 12px;
   display: grid;
@@ -579,7 +553,7 @@ select.loading {
   opacity: 1;
   transform: translateY(-1px);
   box-shadow:
-    0 10px 24px #008f82, /*Ao Clicar Na Lixeira*/
+    0 10px 24px #008f82, /* Ao Clicar Na Lixeira */
     0 3px 8px rgba(0, 0, 0, 0.12);
   outline: none;
 }
@@ -596,6 +570,7 @@ select.loading {
   overflow: hidden; clip: rect(0, 0, 0, 0);
   white-space: nowrap; border: 0;
 }
+
 
 /* =========================================================
    SEÇÕES ESPECÍFICAS (clientes / proprietários)
@@ -646,6 +621,7 @@ select.loading {
   background: #e5e7eb;
 }
 
+
 /* =========================================================
    TOTALIZADOR
    ========================================================= */
@@ -664,8 +640,10 @@ select.loading {
   color: #000;
 }
 
+
 /* =========================================================
-   PDF / IMPRESSÃO
+   PDF / IMPRESSÃO — Regras fora do @media para quando
+   você adicionar body.pdf-export ANTES de capturar o PDF.
    ========================================================= */
 
 /* Modo exportação (classe aplicada no contêiner raiz quando for gerar PDF) */
@@ -676,28 +654,13 @@ select.loading {
   overflow: visible !important;
 }
 
-/* Evitar quebras internas */
+/* Evitar quebras internas (reforço) */
 .pdf-export :is(.card, .table-wrapper, table, .galeria-item) {
   break-inside: avoid !important;
   page-break-inside: avoid !important;
 }
 
-/* Ações/última coluna invisíveis (mantém largura) */
-.pdf-export th.c-acoes,
-.pdf-export #tbl-precos td:last-child,
-.pdf-export #tbl-agricola td:last-child,
-.pdf-export #tbl-historico td:last-child,
-.pdf-export #tbl-pecuaria td:last-child,
-.pdf-export #tbl-bens td:last-child,
-.pdf-export .btn-remove,
-.pdf-export .btn-remove-inline,
-.pdf-export .btn-remove-thumb {
-  visibility: hidden !important;
-  opacity: 0 !important;
-  box-shadow: none !important;
-}
-
-/* Ocultar botões no PDF (genérico) */
+/* Esconder botões/ações na captura (genérico) */
 .pdf-export button,
 .pdf-export .btn,
 .pdf-export .btn-add-inline {
@@ -706,18 +669,14 @@ select.loading {
   pointer-events: none !important;
 }
 
-/* Ajustes específicos de galeria no PDF (se necessário, manter grid 2 col.) */
-/* .pdf-export .galeria-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; } */
-
-/* PRINT: configurações de página */
-
-
 
 /* =========================================================
    PRINT — otimizado p/ A4, margens controladas e tabelas seguras
+   (BLOCO ÚNICO UNIFICADO)
    ========================================================= */
+
+/* Controle real da página PDF */
 @page {
-  /* Controle real da página PDF */
   size: A4 portrait;
   margin: 2mm; /* topo, laterais, rodapé */
 }
@@ -727,68 +686,97 @@ select.loading {
   /* ===== 1) Reset de fundo e fidelidade de cor ===== */
   body { background: none !important; }
   body::before, body::after { content: none !important; display: none !important; }
-
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    max-width: none !important; /* evita “aperto” responsivo no papel */
   }
 
-  /* ===== 2) Layout do conteúdo na área imprimível ==========================================================================
-     Dica: deixe width auto e controle padding interno
-  */
+  /* ===== 2) Layout do conteúdo na área imprimível ====================== */
   .container,
   #export-area {
     width: 100% !important;
-    margin: 0 !important;
     max-width: 100% !important;
+    margin: 0 !important;
     padding: 0 !important;
   }
 
-
-
-  /* Se quiser uma “margem interna” visual, aplique nos cards, não no container */
-  
-  .card {
+  /* Cards (margem/padding no papel) */
+  .pdf-export .card,
+  .pdf-export .galeria-item {
+    width: 100% !important;
+    max-width: 100% !important;
     padding: 3mm !important;
     margin-bottom: 5mm !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
-
-  /* ===== 3) Anti‑responsivo e segurança das tabelas ===== */
-  /* Nada deve encolher como mobile */
-  * { max-width: none !important; }
-
-  .table-wrapper { overflow: visible !important; }
-
-  table {
+  /* Cabeçalho do card ocupa 100% */
+  .pdf-export .card-header {
     width: 100% !important;
-    table-layout: fixed !important;
-    border-collapse: collapse !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 0 0 3mm 0 !important;
+    break-inside: avoid !important;
   }
-
-
-  th {
+  .pdf-export .card-header h2 {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.3 !important;
     white-space: normal !important;
     word-break: break-word !important;
-    overflow: visible !important;
-    text-overflow: initial !important;
   }
 
-  /* EXCEÇÕES: colunas textuais que podem quebrar (ajuste os seletores conforme suas classes) */
-  /* Exemplos: descrição, atividade, município, cultura */
-  .c-descricao,
-  .c-atividade-ovos, .c-atividade-la, .c-atividade-leite, .c-atividade-corte, .c-atividade,
-  .c-municipio, .c-cultura, .c-cultura-agricola, .c-cultura-historico {
-    white-space: normal !important;        /* permite quebrar linha */
+  /* ===== 3) Tabelas que se ajustam ao card (sem estourar) ============= */
+  .pdf-export .table-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .pdf-export table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: auto !important;  /* <<< chave do ajuste */
+    border-collapse: collapse !important;
+    font-size: 12px !important;
+  }
+
+  /* Permitir quebra em cabeçalhos e células */
+  .pdf-export th,
+  .pdf-export td {
+    white-space: normal !important;
     word-break: break-word !important;
-    overflow-wrap: anywhere !important;    /* evita “romper” o card */
+    overflow-wrap: anywhere !important;
+  }
+
+  /* Neutraliza larguras rígidas (.c-*) apenas no print */
+  .pdf-export th[class^="c-"],
+  .pdf-export th[class*=" c-"],
+  .pdf-export td[class^="c-"],
+  .pdf-export td[class*=" c-"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  /* Números/valores podem permanecer sem quebra */
+  .pdf-export td.right,
+  .pdf-export th.right {
+    white-space: nowrap !important;
   }
 
   /* Impede grids responsivos de reorganizar colunas no print */
   .grid-2 { display: block !important; }
 
   /* ===== 4) Evitar quebras internas feias ===== */
-  /* Não quebre no meio dos cartões/tabelas/itens de galeria */
   .pdf-export :is(.card, .table-wrapper, table, .galeria-item) {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
@@ -803,124 +791,29 @@ select.loading {
     page-break-before: always !important;
   }
 
-  /* ===== 5) Galeria sem corte ===== */
-  .pdf-export .galeria-grid {
-    display: block !important;
-    gap: 0 !important;
-  }
-  .pdf-export .galeria-item {
-    display: block !important;
-    margin: 0 0 8mm 0 !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-    overflow: visible !important;
-  }
-  .pdf-export .galeria-item img {
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
-    object-fit: contain !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-  .pdf-export #galeria-imagens {
-    break-after: avoid !important;
-    page-break-after: auto !important;
-  }
-
-  /* ===== 6) Esconder elementos interativos no print ===== */
-  .header-actions,
-  button, .btn,
-  .btn-remove, .btn-remove-thumb, .btn-remove-inline {
-    display: none !important;
-  }
-
-  
-/* Oculta todas as colunas "Ações" na impressão (todas as tabelas) */
-  th.c-acoes,
-  td.c-acoes,
-  th.c-acoes-agricola,
-  td.c-acoes-agricola,
-  th.c-acoes-historico,
-  td.c-acoes-historico,
-  th.c-acoes-ovos,
-  td.c-acoes-ovos,
-  th.c-acoes-la,
-  td.c-acoes-la,
-  th.c-acoes-leite,
-  td.c-acoes-leite,
-  th.c-acoes-corte,
-  td.c-acoes-corte {
-    display: none !important;
-  }
-
-  /* fallback: se por acaso a última coluna for "Ações" mas não tiver classe,
-     esconda a última coluna de tabelas marcadas explicitamente com .tbl-*
-     (use com cautela; remova se afetar outra coluna que não seja Ações) */
-  .tbl-agricola  tr > *:last-child,
-  .tbl-precos    tr > *:last-child,
-  .tbl-historico tr > *:last-child,
-  .tbl-pecuaria  tr > *:last-child,
-  .tbl-ovos      tr > *:last-child,
-  .tbl-la        tr > *:last-child,
-  .tbl-bens      tr > *:last-child {
-    display: none !important;
-  }
-
-
-  .no-print,
-  .no-print * {
-    display: none !important;
-    visibility: hidden !important;
-  }
-
-  /* (Opcional) Condicione ao seu fluxo com body.pdf-export */
-  body.pdf-export .no-print,
-  body.pdf-export .no-print * {
-    display: none !important;
-    visibility: hidden !important;
-  }
-
-  
-/* === Galeria — manter 2 colunas no PDF === */
-
-  /* 1) Reative o grid na impressão */
+  /* ===== 5) Galeria sem corte (grade 2 colunas) ===== */
   .pdf-export .galeria-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 6mm !important;              /* espaço entre as imagens no PDF */
+    gap: 6mm !important;
     margin: 0 !important;
     padding: 0 !important;
   }
-
-  /* 2) Cada item não quebra dentro dele, mas permite vários na mesma página */
   .pdf-export .galeria-item {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-    margin: 0 !important;             /* evita aumentar demais a altura total */
-    border: none !important;          /* opcional: remove borda/sombra no PDF */
-    box-shadow: none !important;      /* opcional */
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
     background: transparent !important;
   }
-
-  /* 3) Dê uma altura previsível às imagens para o motor de print conseguir compor a grade
-        Ajuste 65–90mm conforme o resultado que você deseja por página */
   .pdf-export .galeria-item img {
     display: block !important;
     width: 100% !important;
-    height: 70mm !important;          /* <<< ajuste aqui o tamanho desejado */
-    object-fit: cover !important;     /* preenche o card mantendo estética */
+    height: 70mm !important;  /* ajuste 65–90mm conforme desejar */
+    object-fit: cover !important;
     max-height: none !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
-
-  /* 4) Remova a regra antiga que transformava a galeria em bloco na impressão */
-  /* Se não puder remover do código, neutralize aqui: */
-  .pdf-export .galeria-grid[data-force-block="true"] {
-    display: grid !important;
-  }
-
-  /* 5) Se você estava usando margin extra entre itens no print, neutralize: */
   .pdf-export #galeria-imagens {
     break-after: auto !important;
     page-break-after: auto !important;
@@ -928,116 +821,297 @@ select.loading {
     padding: 0 !important;
   }
 
+  /* ===== 6) Esconder elementos interativos no print ===== */
+  .header-actions,
+  button, .btn,
+  .btn-remove, .btn-remove-thumb, .btn-remove-inline,
+  .no-print, .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  body.pdf-export .no-print,
+  body.pdf-export .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
 
+  /* ===== 7) Ocultar SOMENTE colunas de Ações (todas as tabelas) ===== */
+  .pdf-export th.c-acoes,
+  .pdf-export td.c-acoes,
+  .pdf-export th.c-acoes-agricola,
+  .pdf-export td.c-acoes-agricola,
+  .pdf-export th.c-acoes-historico,
+  .pdf-export td.c-acoes-historico,
+  .pdf-export th.c-acoes-culturadiversa,
+  .pdf-export td.c-acoes-culturadiversa,
+  .pdf-export th.c-acoes-leite,
+  .pdf-export td.c-acoes-leite,
+  .pdf-export th.c-acoes-corte,
+  .pdf-export td.c-acoes-corte {
+    display: none !important;
+  }
+  /* Alternativa genérica:
+     .pdf-export table th[class*="acoes"],
+     .pdf-export table td[class*="acoes"] { display: none !important; }
+  */
+
+  /* ===== 8) Garantir TFOOT visível/alinhado ===== */
+  .pdf-export tfoot th,
+  .pdf-export tfoot td {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: table-cell !important;
+  }
+
+  /* ===== 9) Rebanho — remover a 5ª coluna (Ações) ===== */
+  .pdf-export .tbl-rebanho thead th:nth-child(5),
+  .pdf-export .tbl-rebanho tbody td:nth-child(5),
+  .pdf-export .tbl-rebanho tfoot td:nth-child(5) {
+    display: none !important;
+  }
+  
+  
+
+
+  /* =========================
+   PATCH PDF — Totais e Campos legíveis
+   ========================= */
+
+  /* 1) Totais (tfoot) e totalizadores: NÃO quebrar linha */
+  .pdf-export tfoot td,
+  .pdf-export tfoot th {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+  /* IDs e <strong> que exibem totais */
+  .pdf-export tfoot strong,
+  .pdf-export [id^="total-"],
+  .pdf-export [id^="renda-total"] {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    display: inline-block !important;
+  }
+  /* Totais do card de resumo */
+  .pdf-export .card-total .totalizador strong {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  /* 2) Colunas numéricas (saldo, produção, valor) sem quebra */
+  .pdf-export td.right,
+  .pdf-export th.right,
+  .pdf-export [class*="c-saldo"],
+  .pdf-export [class*="c-producao"],
+  .pdf-export [class*="c-valor"] {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  /* 3) Evitar encolhimento extremo de inputs/selects */
+  .pdf-export td input,
+  .pdf-export td select {
+    min-width: 76px !important;      /* ajuste fino confortável sem estourar a página */
+    height: 26px !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    padding: 4px 6px !important;
+  }
+
+}
+/* =========================== FIM PRINT ================================= */
+
+
+/* =========================================================
+   ESPECIAL — mostrar só os ícones dos 4 botões (mobile)
+   ========================================================= */
+@media (max-width: 768px) {
+  #btn-add-cliente .btn-text,
+  #btn-remove-cliente .btn-text,
+  #btn-add-propriedade .btn-text,
+  #btn-remove-propriedade .btn-text {
+    display: none !important;
+  }
+
+  #btn-add-cliente,
+  #btn-remove-cliente,
+  #btn-add-propriedade,
+  #btn-remove-propriedade {
+    padding: 8px;
+    gap: 0;
+  }
+
+  #btn-add-cliente .btn-icon,
+  #btn-remove-cliente .btn-icon,
+  #btn-add-propriedade .btn-icon,
+  #btn-remove-propriedade .btn-icon {
+    margin: 0;
+  }
 }
 
 
-/*=================================================================*/
+/* ===================================================================
+   RESPONSIVIDADE GERAL — mobile até 768px
+   =================================================================== */
+@media (max-width: 768px) {
+  .container { padding: 12px; }
 
+  .app-header, .app-footer {
+    flex-direction: column;
+    text-align: center;
+  }
 
-/* === Extensão de estilo para Bens e Rebanho === */
-/* Base igual às outras tabelas */
-:is(
-  .tbl-agricola, .tbl-precos, .tbl-historico,
-  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
-  .tbl-bens, .tbl-rebanho
-) {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
-  color: #1b1b1b;
+  .card { padding: 15px; }
+
+  .grid-2,
+  #container-clientes,
+  #container-proprietarios {
+    grid-template-columns: 1fr !important;
+  }
+
+  .socio-divider { margin-top: 20px; }
+
+  .table-wrapper { padding: 6px; }
+
+  .galeria-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .galeria-item img { height: 200px !important; }
+
+  .btn,
+  .btn-add-inline,
+  .btn-remove-inline {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .card-total { padding: 16px; }
+
+  .card-total .totalizador {
+    flex-direction: column;
+    text-align: center;
+    gap: 4px;
+  }
 }
 
-/* Cabeçalho */
-:is(
-  .tbl-agricola, .tbl-precos, .tbl-historico,
-  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
-  .tbl-bens, .tbl-rebanho
-) th {
-  background: linear-gradient(180deg, #f0f6f2 0%, #e7f1ec 100%);
-  color: var(--green);
-  font-weight: 700;
-  padding: 14px 10px;
-  border-bottom: 2px solid #d5e6dd;
-  text-align: left;
-  letter-spacing: .3px;
+
+/* =========================
+   1) MOBILE (uso) — até 768px
+   Mantém células grandes para digitação, com scroll lateral
+   ========================= */
+@media (max-width: 768px) {
+  /* a) Tabelas: layout solto, sem “apertar” demais */
+  :is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) {
+    table-layout: auto;                  /* deixa o navegador calcular larguras */
+    width: max-content;                  /* deixa a tabela “maior que a tela”, se precisar */
+    min-width: 100%;                     /* mas no mínimo ocupa 100% da viewport */
+    font-size: 16px;                     /* evita zoom automático do iOS/Android ao focar */
+  }
+
+  .table-wrapper {
+    overflow-x: auto;                     /* já existe, reforço */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* b) Células: não deixar quebrar em múltiplas linhas dentro do th/td */
+  :is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) th,
+  :is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td {
+    white-space: nowrap;                 /* mantém cada coluna em uma linha só */
+  }
+
+  /* c) Inputs/Selects dentro das células: tamanho confortável para digitar */
+  :is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td input,
+  :is(.tbl-agricola, .tbl-precos, .tbl-historico, .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-culturadiversa, .tbl-bens, .tbl-rebanho) td select {
+    min-width: 120px;                    /* 👈 evita ficar “microscópico” */
+    height: 38px;                        /* altura de toque confortável */
+    font-size: 16px;                     /* evita zoom automático no iOS */
+  }
+
+  /* d) Trocamos width -> min-width nas colunas (apenas no mobile) */
+  /* -------- Preços -------- */
+  .c-cultura   { min-width: 180px; }
+  .c-data      { min-width: 120px; }
+  .c-fonte     { min-width: 110px; }
+  .c-municipio { min-width: 140px; }
+  .c-estado    { min-width:  80px; }
+  .c-preco     { min-width: 110px; }
+  .c-acoes     { min-width: 110px; }
+
+  /* -------- Agrícola -------- */
+  .c-ano-agricola        { min-width: 120px; }
+  .c-cultura-agricola    { min-width: 150px; }
+  .c-und-medida-agricola { min-width: 105px; }
+  .c-area-agricola       { min-width:  90px; }
+  .c-produt-agricola     { min-width:  90px; }
+  .c-producao-agricola   { min-width: 120px; }
+  .c-saldo-agricola      { min-width: 130px; }
+  .c-acoes-agricola      { min-width: 110px; }
+
+  /* -------- Pecuária (corte) -------- */
+  .c-ano-civil-corte   { min-width: 120px; }
+  .c-atividade-corte   { min-width: 160px; }
+  .c-und-medida-corte  { min-width: 100px; }
+  .c-ua-ha-corte       { min-width:  70px; }
+  .c-area-util-corte   { min-width:  60px; }
+  .c-quantidade-corte  { min-width:  70px; }
+  .c-peso-corte        { min-width:  60px; }
+  .c-producao-corte    { min-width: 100px; }
+  .c-saldo-corte       { min-width: 110px; }
+  .c-acoes-corte       { min-width: 110px; }
+
+  /* -------- Histórico -------- */
+  .c-ano-safra-historico   { min-width: 100px; }
+  .c-cultura-historico     { min-width: 180px; }
+  .c-und-medida-historico  { min-width: 105px; }
+  .c-ua-ha-historico       { min-width:  71px; }
+  .c-area-historico        { min-width:  71px; }
+  .c-produt-historico      { min-width:  90px; }
+  .c-producao-historico    { min-width: 130px; }
+  .c-saldo-historico       { min-width: 110px; }
+  .c-acoes-historico       { min-width: 110px; }
+
+  /* -------- Bens -------- */
+  .c-descricao { min-width: 220px; }
+  .c-marca     { min-width: 180px; }
+  .c-ano-fab   { min-width: 110px; }
+  .c-cor       { min-width: 140px; }
+  .c-valor     { min-width: 130px; }
+
+  /* -------- Pecuária (leite) -------- */
+  .c-ano-civil-leite     { min-width: 110px; }
+  .c-atividade-leite     { min-width: 180px; }
+  .c-producao-dia-leite  { min-width:  90px; }
+  .c-area-util-leite     { min-width:  90px; }
+  .c-quantidade-leite    { min-width: 120px; }
+  .c-producao-total      { min-width: 110px; }
+  .c-saldo               { min-width: 110px; }
+  .c-acoes               { min-width: 110px; }
+
+  /* -------- Cultura Diversa -------- */
+  .c-ano-safra-culturadiversa      { min-width: 110px; }
+  .c-atividade-culturadiversa      { min-width: 180px; }
+  .c-ovelhas-culturadiversa        { min-width: 110px; }
+  .c-produt-culturadiversa         { min-width: 120px; }
+  .c-producao-total-culturadiversa { min-width: 130px; }
+  .c-saldo-culturadiversa          { min-width: 120px; }
+  .c-acoes-culturadiversa          { min-width: 110px; }
 }
 
-/* Células */
-:is(
-  .tbl-agricola, .tbl-precos, .tbl-historico,
-  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
-  .tbl-bens, .tbl-rebanho
-) td {
-  padding: 10px 12px;
-  background: #ffffffaa;
-  border-bottom: 1px solid #ececec;
-  transition: background .15s ease;
+
+/* =====================
+   Utilitário de grid 1
+   ===================== */
+.grid-1 {
+  display: grid;
+  grid-template-columns: 1fr; /* sempre 1 coluna */
+  gap: 12px;
 }
-
-/* Hover */
-:is(
-  .tbl-agricola, .tbl-precos, .tbl-historico,
-  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
-  .tbl-bens, .tbl-rebanho
-) tr:hover td {
-  background: #f6faf9;
-}
-
-/* Primeira coluna em destaque */
-:is(
-  .tbl-agricola, .tbl-precos, .tbl-historico,
-  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
-  .tbl-bens, .tbl-rebanho
-) td:first-child {
-  font-weight: 600;
-  color: #2b4d3f;
-}
-
-/* Inputs/Selects dentro de células (se usar nas futuras edições) */
-:is(
-  .tbl-agricola, .tbl-precos, .tbl-historico,
-  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
-  .tbl-bens, .tbl-rebanho
-) td input,
-:is(
-  .tbl-agricola, .tbl-precos, .tbl-historico,
-  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
-  .tbl-bens, .tbl-rebanho
-) td select {
-  width: 100%;
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #dde4e0;
-  background: #fff;
-  transition: border-color .15s ease, box-shadow .15s ease;
-}
-
-:is(
-  .tbl-agricola, .tbl-precos, .tbl-historico,
-  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
-  .tbl-bens, .tbl-rebanho
-) td input:focus,
-:is(
-  .tbl-agricola, .tbl-precos, .tbl-historico,
-  .tbl-pecuaria, .tbl-pecuaria-leite, .tbl-la, .tbl-ovos,
-  .tbl-bens, .tbl-rebanho
-) td select:focus {
-  border-color: var(--green);
-  box-shadow: 0 0 0 2px #cbe9d8;
-}
-
-/* (Opcional) Largura de colunas do Rebanho para ficar alinhado */
-.tbl-rebanho th:nth-child(1), .tbl-rebanho td:nth-child(1) { width: 220px; }
-.tbl-rebanho th:nth-child(2), .tbl-rebanho td:nth-child(2) { width: 140px; }
-.tbl-rebanho th:nth-child(3), .tbl-rebanho td:nth-child(3) { width: 120px; text-align: right; }
-
-/* (Opcional) Manter totalizador do Rebanho alinhado à direita */
-#tbl-rebanho tfoot td { background: #ffffffaa; }
-#tbl-rebanho tfoot td:nth-child(2),
-#tbl-rebanho tfoot td:nth-child(3) { text-align: right; }
-
-/* (Já existe) PDF: Bens já tem a coluna Ações oculta; Rebanho não tem Ações — nada a fazer */
 
 
 /* ==================== REBANHO — Botão Remover (pink) ==================== */
@@ -1045,7 +1119,6 @@ select.loading {
 /* Mantém compacto como você já fez */
 .tbl-rebanho .btn.btn-remove {
   padding: 4px 8px;
-  /* 🌸 cor do botão a partir da variável --pink */
   background-color: var(--pink);
   color: #fff;
   border: none;
@@ -1055,7 +1128,7 @@ select.loading {
 
 /* Hover mais escuro (tom próximo do seu hover já usado em outros pinks) */
 .tbl-rebanho .btn.btn-remove:hover {
-  background-color: #b7b7b7; /*============================================================================Muda Cor Quando Passa O Mouse Em Cima*/
+  background-color: #b7b7b7; /* Muda Cor Quando Passa O Mouse Em Cima */
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 
@@ -1069,7 +1142,6 @@ select.loading {
   outline: 2px solid #272727; /* um destaque suave no tom do pink */
   outline-offset: 2px;
 }
-
 
 
 /* === CARD TOTAL PERSONALIZADO === */
@@ -1116,3 +1188,10 @@ select.loading {
   color: #000;
   font-weight: 700;
 }
+
+/*
+.grid-1 {
+  display: grid;
+  grid-template-columns: 1fr; /* sempre 1 coluna */
+/*  gap: 12px;
+}*/
