@@ -2093,6 +2093,115 @@ function initGaleria() {
     }
   }
 
+  async function compressImageToJPEG(file, quality = 0.8, maxWidth = 1200) {
+    try {
+      const bitmap = await createImageBitmap(file);
+      const { width, height } = bitmap;
+      const scale = width > maxWidth ? maxWidth / width : 1;
+      const targetW = Math.round(width * scale);
+      const targetH = Math.round(height * scale);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = targetW;
+      canvas.height = targetH;
+
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, targetW, targetH);
+      ctx.drawImage(bitmap, 0, 0, targetW, targetH);
+
+      const blob = await new Promise(resolve =>
+        canvas.toBlob(resolve, 'image/jpeg', quality)
+      );
+      if (!blob) throw new Error('Falha ao gerar JPEG');
+
+      const newName = file.name.replace(/\.\w+$/, '.jpg');
+      return new File([blob], newName, { type: 'image/jpeg' });
+    } catch (err) {
+      console.warn('Fallback para <img>:', err);
+      const dataURL = await new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(fr.result);
+        fr.onerror = reject;
+        fr.readAsDataURL(file);
+      });
+
+      const img = await new Promise((resolve, reject) => {
+        const i = new Image();
+        i.onload = () => resolve(i);
+        i.onerror = reject;
+        i.src = dataURL;
+      });
+
+      const { width, height } = img;
+      const scale = width > maxWidth ? maxWidth / width : 1;
+      const targetW = Math.round(width * scale);
+      const targetH = Math.round(height * scale);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = targetW;
+      canvas.height = targetH;
+
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, targetW, targetH);
+      ctx.drawImage(img, 0, 0, targetW, targetH);
+
+      const blob = await new Promise(resolve =>
+        canvas.toBlob(resolve, 'image/jpeg', quality)
+      );
+      if (!blob) throw new Error('Falha ao gerar JPEG (fallback)');
+
+      const newName = file.name.replace(/\.\w+$/, '.jpg');
+      return new File([blob], newName, { type: 'image/jpeg' });
+    }
+  }
+
+  // Helper: mostra uma barra de progresso animada dentro do item da galeria
+  function showProgress(item) {
+    // cria elementos
+    const progWrap = document.createElement('div');
+    progWrap.className = 'compress-progress';
+    progWrap.innerHTML = '<div class="bar" style="width:0%"></div>';
+    item.appendChild(progWrap);
+
+    const bar = progWrap.querySelector('.bar');
+    let stopped = false;
+    let interval = null;
+
+    // animação falsa: aumenta progress até 92% enquanto não for finalizado
+    function start() {
+      let pct = 4;
+      bar.style.width = pct + '%';
+      interval = setInterval(() => {
+        if (stopped) return;
+        // small random increment, slower as it approaches 90%
+        const inc = Math.max(0.5, (1 + Math.random() * 3) * (1 - pct / 95));
+        pct = Math.min(92, +(pct + inc).toFixed(1));
+        bar.style.width = pct + '%';
+      }, 220);
+    }
+
+    function finish() {
+      stopped = true;
+      if (interval) clearInterval(interval);
+      bar.style.width = '100%';
+      // pequena pausa antes de remover
+      setTimeout(() => { try { progWrap.remove(); } catch (e) {} }, 700);
+    }
+
+    function fail() {
+      stopped = true;
+      if (interval) clearInterval(interval);
+      bar.style.width = '0%';
+      progWrap.style.opacity = '0.6';
+      setTimeout(() => { try { progWrap.remove(); } catch (e) {} }, 900);
+    }
+
+    start();
+    return { finish, fail };
+  }
+
   function createItem({ id, blob, name }) {
     const url = URL.createObjectURL(blob);
 
@@ -2104,6 +2213,79 @@ function initGaleria() {
     img.src = url;
     img.alt = name || 'imagem';
 
+    const sizeKB = (blob.size / 1024).toFixed(1);
+
+    // Container de botões
+    const btnContainer = document.createElement('div');
+    btnContainer.style.cssText = 'display:flex; gap:6px; margin-top:6px;';
+
+    // Botão: Comprimir para JPEG
+    const btnCompressJPEG = document.createElement('button');
+    btnCompressJPEG.type = 'button';
+    btnCompressJPEG.className = 'btn btn-sm';
+    btnCompressJPEG.title = 'Comprimir imagem em JPEG de alta qualidade';
+    btnCompressJPEG.innerHTML = '📉 JPEG 0.8';
+    btnCompressJPEG.addEventListener('click', async () => {
+      btnCompressJPEG.disabled = true;
+      const prog = showProgress(item);
+      try {
+        const compressed = await compressImageToJPEG(blob, 0.8, 1200);
+        const compressedKB = (compressed.size / 1024).toFixed(1);
+        const reduction = (100 - (compressed.size / blob.size * 100)).toFixed(1);
+        prog.finish();
+        alert(`✅ Sucesso!\n\nTamanho original: ${sizeKB}KB\nTamanho novo: ${compressedKB}KB\nReduação: ${reduction}%\n\nA imagem foi atualizada no navegador.`);
+
+        // Atualiza IndexedDB com nova versão
+        await dbDeleteImage(id);
+        const newId = await dbAddImage(compressed);
+
+        // Remove o item antigo e cria novo
+        item.remove();
+        URL.revokeObjectURL(url);
+        createItem({ id: newId, blob: compressed, name: compressed.name });
+      } catch (e) {
+        console.error('Erro ao comprimir JPEG:', e);
+        prog.fail();
+        alert('Erro ao comprimir. Tente novamente.');
+      } finally {
+        btnCompressJPEG.disabled = false;
+      }
+    });
+
+    // Botão: Comprimir para WebP
+    const btnCompressWebP = document.createElement('button');
+    btnCompressWebP.type = 'button';
+    btnCompressWebP.className = 'btn btn-sm';
+    btnCompressWebP.title = 'Comprimir imagem em WebP (melhor compressão)';
+    btnCompressWebP.innerHTML = '🔧 WebP';
+    btnCompressWebP.addEventListener('click', async () => {
+      btnCompressWebP.disabled = true;
+      const prog = showProgress(item);
+      try {
+        const compressed = await compressToWebP(blob, 0.85, 1200);
+        const compressedKB = (compressed.size / 1024).toFixed(1);
+        const reduction = (100 - (compressed.size / blob.size * 100)).toFixed(1);
+        prog.finish();
+        alert(`✅ Sucesso!\n\nTamanho original: ${sizeKB}KB\nTamanho novo: ${compressedKB}KB\nReduação: ${reduction}%\n\nA imagem foi atualizada no navegador.`);
+
+        // Atualiza IndexedDB com nova versão
+        await dbDeleteImage(id);
+        const newId = await dbAddImage(compressed);
+
+        // Remove o item antigo e cria novo
+        item.remove();
+        URL.revokeObjectURL(url);
+        createItem({ id: newId, blob: compressed, name: compressed.name });
+      } catch (e) {
+        console.error('Erro ao comprimir WebP:', e);
+        prog.fail();
+        alert('Erro ao comprimir. Tente novamente.');
+      } finally {
+        btnCompressWebP.disabled = false;
+      }
+    });
+
+    // Botão: Remover
     const btnRemover = document.createElement('button');
     btnRemover.type = 'button';
     btnRemover.className = 'btn-remove-thumb';
@@ -2124,8 +2306,17 @@ function initGaleria() {
       }
     });
 
+    // Info de tamanho
+    const infoSize = document.createElement('small');
+    infoSize.style.cssText = 'display:block; margin-top:4px; color:#666; font-size:0.85rem;';
+    infoSize.textContent = `${sizeKB}KB`;
+
     item.appendChild(img);
-    item.appendChild(btnRemover);
+    btnContainer.appendChild(btnCompressJPEG);
+    btnContainer.appendChild(btnCompressWebP);
+    btnContainer.appendChild(btnRemover);
+    item.appendChild(btnContainer);
+    item.appendChild(infoSize);
     galeria.appendChild(item);
   }
 
@@ -2210,137 +2401,191 @@ function initGaleria() {
 
 
 /* ============================================================
-   PDF (html2pdf)
+   PDF (html2pdf) — compressão de imagens e controle de tamanho
+   Gera o PDF iterativamente reduzindo qualidade até <= 500KB.
    ============================================================ */
-/*
+
 function initPDF() {
   const btn = qs('#btn-gerar-pdf');
   if (!btn) return;
 
-  btn.addEventListener('click', () => {
-    const elemento = qs('#export-area');
+  const MAX_BYTES = 500 * 1024; // 500 KB
 
-    // 1) Ativa um “modo PDF” que só muda a visibilidade (sem reflow)
+  async function loadImage(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+  }
+
+  async function compressImgElement(imgEl, quality = 0.8, maxWidth = 1200) {
+    try {
+      const src = imgEl.src;
+      if (!src) return;
+      const img = await loadImage(src);
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      const scale = Math.min(1, maxWidth / w || 1);
+      const cw = Math.round(w * scale);
+      const ch = Math.round(h * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = cw;
+      canvas.height = ch;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.drawImage(img, 0, 0, cw, ch);
+      return canvas.toDataURL('image/jpeg', quality);
+    } catch (e) {
+      return imgEl.src; // fallback: mantém original
+    }
+  }
+
+  async function prepareCloneWithCompressedImages(srcEl, quality, maxWidth) {
+    const clone = srcEl.cloneNode(true);
+    const imgs = Array.from(clone.querySelectorAll('img'));
+    await Promise.all(imgs.map(async (img) => {
+      try {
+        const dataUrl = await compressImgElement(img, quality, maxWidth);
+        img.src = dataUrl;
+        img.removeAttribute('srcset');
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+      } catch (e) {
+        // ignore and keep original
+      }
+    }));
+    return clone;
+  }
+
+  btn.addEventListener('click', async () => {
+    const elemento = qs('#export-area');
+    if (!elemento) return;
+
     document.documentElement.classList.add('pdf-export');
 
-    const opt = {
-      margin: 2,  // margem externa controlada pelo html2pdf
-      filename: 'laudo-agronegocio.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 1.5,                          // melhora definição sem “explodir” a página
-        useCORS: true,
-        background: '#ffffff',
-        scrollY: 0,
-        windowWidth: document.documentElement.scrollWidth
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }, 
-      pagebreak: {
-        mode: ['css', 'legacy'],
-        before: ['.card:not(:first-of-type)'],
-        avoid: ['.card', '.table-wrapper', 'table', '.galeria-item']
-      },
-      onclone: (doc) => {
-        // 2) Garante a mesma regra no DOM clonado
-        const style = doc.createElement('style');
-        style.textContent = `
-          /* Invisível, mas mantém tamanho/posição (sem reflow) */                                   /*
-          .btn-remove-thumb { 
-            visibility: hidden !important; 
-            opacity: 0 !important; 
-            box-shadow: none !important; 
-          }
+    const filename = 'laudo-agronegocio.pdf';
 
-          /* ---- Seu bloco já existente (mantido) ---- */
-          /* Cores fiéis */
-
-                                                                                                      /*
-
-          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                                                                                                      /*
-          /* Remover fundos globais pesados para caber e ficar legível */                            
-                                                                                                                /*
-          body { background: none !important; }
-          body::before, body::after { content: none !important; display: none !important; }
-
-          /* Header/Footer com cor */
-                                                                                                                /*
-          .app-header, .app-footer { 
-            position: static !important; 
-            background: #006647 !important; 
-            color: #fff !important; 
-          }
-
-          /* Container fluido (sem largura fixa); padding moderado */
-                                                                                                                /*
-          #export-area {
-            padding: 8mm !important;
-            box-sizing: border-box !important;
-            background: #fff !important;
-            width: auto !important; 
-            max-width: 100% !important;
-          }
-
-          /* Tabelas fluidas e sem arredondamento (evita clipping) */
-                                                                                                               /*
-          table {
-            width: 100% !important;
-            table-layout: auto !important;
-            border-radius: 0 !important;
-            overflow: visible !important;
-          }
-
-          /* Cabeçalhos com cor */
-                                                                                                                /*
-          th { background: #ecf5f0 !important; color: #006647 !important; }
-
-          /* Texto quebra; padding menor para caber */
-                                                                                                                /*
-          th, td {
-            white-space: normal !important;
-            word-break: break-word !important;
-            text-overflow: clip !important;
-            overflow: visible !important;
-            padding: 3px !important;
-            font-size: 0.80rem !important;
-            line-height: 1.2 !important;
-          }
-
-          /* Remove larguras fixas de colunas no PDF */
-                                                                                                                /*
-          .c-cultura, .c-data, .c-fonte, .c-estado, .c-municipio,
-          .c-preco, .c-acoes, .c-ano, .c-area, .c-produt,
-          .c-producao, .c-saldo, .c-atividade, .c-ua-ha,
-          .c-area-util, .c-quantidade, .c-peso, .c-descricao,
-          .c-marca, .c-ano-fab, .c-cor, .c-valor {
-            width: auto !important;
-          }
-
-          /* Cards simples (sem sombra) para evitar recorte visual) */
-                                                                                                                /*
-          .card {
-            box-shadow: none !important;
-            border-radius: 0 !important;
-            border: 1px solid #ddd !important;
-            padding: 10mm !important;
-          }
-        `;
-        doc.head.appendChild(style);
-      }
+    const baseOpt = {
+      margin: 2,
+      filename,
+      image: { type: 'jpeg', quality: 0.9 },
+      html2canvas: { useCORS: true, background: '#ffffff', scrollY: 0 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+      pagebreak: { mode: ['css', 'legacy'], before: ['.card:not(:first-of-type)'], avoid: ['.card', '.table-wrapper', 'table', '.galeria-item'] }
     };
 
-    html2pdf()
-      .set(opt)
-      .from(elemento)
-      .save()
-      .finally(() => {
-        // 3) Desativa o “modo PDF” e restaura o estado visual
-        document.documentElement.classList.remove('pdf-export');
-      });
+    // tentativas decrescentes de qualidade/scale para atingir MAX_BYTES
+    const qualityList = [0.9, 0.8, 0.7, 0.6, 0.5, 0.45, 0.4];
+    const canvasMaxWidthList = [1400, 1200, 1000, 800, 600];
+
+    let finalBlob = null;
+    // setup progress UI near button
+    const progressWrapper = document.createElement('div');
+    progressWrapper.className = 'pdf-gen-progress';
+    progressWrapper.innerHTML = `
+      <div class="pdf-gen-bar"><div class="pdf-gen-fill" style="width:0%"></div></div>
+      <div class="pdf-gen-text" aria-live="polite" style="margin-top:6px;font-size:0.9rem;color:#333"></div>
+    `;
+    // append after button
+    if (btn.parentNode) btn.parentNode.appendChild(progressWrapper);
+    const fillEl = progressWrapper.querySelector('.pdf-gen-fill');
+    const textEl = progressWrapper.querySelector('.pdf-gen-text');
+
+    function setPdfProgress(pct, text) {
+      try { fillEl.style.width = Math.max(0, Math.min(100, pct)) + '%'; } catch (e) {}
+      if (textEl) textEl.textContent = text || '';
+    }
+    const totalAttempts = qualityList.length * canvasMaxWidthList.length;
+    let attemptIndex = 0;
+    for (const q of qualityList) {
+      for (const maxW of canvasMaxWidthList) {
+        attemptIndex++;
+        setPdfProgress(Math.round((attemptIndex - 1) / totalAttempts * 60), `Tentativa ${attemptIndex}/${totalAttempts} — qualidade ${q}, largura ${maxW}px (comprimindo imagens...)`);
+        // prepara clone com imagens comprimidas
+        const clone = await prepareCloneWithCompressedImages(elemento, q, maxW);
+        setPdfProgress(Math.round((attemptIndex - 1) / totalAttempts * 75), `Tentativa ${attemptIndex}/${totalAttempts} — qualidade ${q}, largura ${maxW}px (gerando PDF...)`);
+
+        // coloca o clone em um wrapper offscreen para html2pdf
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'fixed';
+        wrapper.style.left = '-10000px';
+        wrapper.style.top = '0';
+        wrapper.appendChild(clone);
+        document.body.appendChild(wrapper);
+
+        const opt = Object.assign({}, baseOpt, {
+          image: { type: 'jpeg', quality: q },
+          html2canvas: Object.assign({}, baseOpt.html2canvas, { scale: Math.max(1, Math.floor(maxW / 800 * 1.2)) || 1 })
+        });
+
+        try {
+          // gera blob sem salvar
+          // html2pdf exposes outputPdf that returns a Promise
+          // use outputPdf('blob') when available
+          // fallback: output('blob')
+          const worker = html2pdf().set(opt).from(clone);
+          let blob;
+          if (typeof worker.outputPdf === 'function') {
+            blob = await worker.outputPdf('blob');
+          } else {
+            blob = await worker.output('blob');
+          }
+
+          if (blob && blob.size <= MAX_BYTES) {
+            finalBlob = blob;
+            document.body.removeChild(wrapper);
+            setPdfProgress(95, 'Concluído: tamanho OK. Preparando download...');
+            break;
+          }
+
+          // guarda último blob gerado (menor possível até agora)
+          finalBlob = finalBlob && finalBlob.size <= blob.size ? finalBlob : blob;
+          setPdfProgress(Math.round((attemptIndex) / totalAttempts * 85), `Tentativa ${attemptIndex}/${totalAttempts} — melhor até agora ${Math.round((finalBlob.size/1024))} KB`);
+        } catch (e) {
+          console.error('Erro ao gerar PDF na iteração:', e);
+        } finally {
+          // cleanup wrapper
+          if (document.body.contains(document.body.querySelector('div[style*="-10000px"]'))) {
+            try { document.body.removeChild(document.body.querySelector('div[style*="-10000px"]')); } catch (e) { }
+          }
+        }
+      }
+      if (finalBlob && finalBlob.size <= MAX_BYTES) break;
+    }
+
+    // se não atingiu o limite, avisa usuário e oferece o maior resultado gerado
+    if (finalBlob) {
+      setPdfProgress(98, 'Finalizando...');
+      if (finalBlob.size > MAX_BYTES) {
+        alert('Não foi possível reduzir o PDF para <= 500KB sem perder muita qualidade. Será baixada a melhor versão disponível.');
+      }
+      // força download do blob
+      const url = URL.createObjectURL(finalBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } else {
+      alert('Erro ao gerar PDF. Tente novamente com menos imagens ou menor resolução.');
+    }
+
+    // finalize progress UI
+    setPdfProgress(100, 'Concluído');
+    setTimeout(() => { try { progressWrapper.remove(); } catch (e) {} }, 900);
+
+    document.documentElement.classList.remove('pdf-export');
   });
 }
 
-*/
+// inicializa automaticamente
+initPDF();
 
 /* ============================================================
    TESTE (SEARCH)
@@ -2519,19 +2764,18 @@ function initCulturadiversa() {
 /* ============================================================
    Teste Botão Pelo Navegador
    ============================================================ */
-document.getElementById("btn-gerar-pdf").addEventListener("click", function () {
-
-    // adiciona classe para ativar o modo de impressão (CSS @media print)
-    document.body.classList.add("pdf-export");
-
-    // espera o layout aplicar a classe antes de abrir o print
+const _btnGerar = document.getElementById('btn-gerar-pdf');
+if (_btnGerar) {
+  _btnGerar.addEventListener('click', function () {
+    // If html2pdf is available, our initPDF handles the click.
+    if (typeof html2pdf !== 'undefined') return;
+    document.body.classList.add('pdf-export');
     setTimeout(() => {
-        window.print();
-
-        // remove a classe após imprimir (opcional)
-        document.body.classList.remove("pdf-export");
+      window.print();
+      document.body.classList.remove('pdf-export');
     }, 50);
-});
+  });
+}
 
 
 

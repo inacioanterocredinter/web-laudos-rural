@@ -4,9 +4,10 @@ const CACHE = "laudo-cache-v1";
 const ASSETS = [
   "/",
   "/index.html",
-  /*"/static/css/style.css",*/
-  /*"/static/js/script.js",*/
-  /*"/static/json/estados-cidades.json",*/
+  "/static/css/style.css",
+  "/static/js/script.js",
+  "/static/js/html2pdf.bundle.min.js",
+  "/static/json/estados-cidades.json",
   "/static/img/background_agro.jpg",
   "/static/img/logo_credinter.png",
 ];
@@ -14,6 +15,10 @@ const ASSETS = [
 const PRECACHE = [
   '/',
   '/index.html',
+  '/static/css/style.css',
+  '/static/js/script.js',
+  '/static/js/html2pdf.bundle.min.js',
+  '/static/json/estados-cidades.json',
   '/static/img/background_agro.jpg',
   '/static/img/logo_credinter.png'
 ]

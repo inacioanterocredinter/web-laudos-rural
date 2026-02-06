@@ -517,9 +517,10 @@ select.loading {
   position: relative;
   border: 1px solid var(--border);
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible;
   background: #fff;
   box-shadow: 0 4px 12px #0001;
+  padding-bottom: 8px;
 }
 
 .galeria-item img {
@@ -527,6 +528,7 @@ select.loading {
   width: 100%;
   height: 290px; /* altura final */
   object-fit: cover;
+  border-radius: 12px 12px 0 0;
 }
 
 /* Botão de excluir (thumb) */
@@ -548,6 +550,51 @@ select.loading {
   opacity: 0.95;
   transition: transform 150ms ease, opacity 150ms ease, box-shadow 150ms ease;
 }
+
+/* Botões compactos de compressão na galeria */
+.btn.btn-sm {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  background-color: #007a5a;
+  color: #fff;
+  border: 1px solid #005540;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.btn.btn-sm:hover:not(:disabled) {
+  background-color: #005e47;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn.btn-sm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Barra de progresso para compressão */
+.compress-progress {
+  height: 8px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 8px 10px 4px 10px;
+}
+.compress-progress .bar {
+  height: 100%;
+  background: linear-gradient(90deg,#00b37e,#007a5a);
+  width: 0%;
+  transition: width 220ms linear;
+}
+
+/* PDF generation progress near button */
+.pdf-gen-progress { margin-top:10px; max-width:420px; }
+.pdf-gen-bar { height: 10px; background: rgba(0,0,0,0.06); border-radius: 8px; overflow: hidden; }
+.pdf-gen-fill { height:100%; width:0; background: linear-gradient(90deg,#ffb020,#ff6b00); transition: width 220ms linear; }
+.pdf-gen-text { margin-top:6px; color:#444; font-size:0.9rem; }
 .btn-remove-thumb:hover,
 .btn-remove-thumb:focus {
   opacity: 1;
