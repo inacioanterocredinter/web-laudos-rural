@@ -549,6 +549,15 @@
     <h2>Exportar Laudo</h2>
     <button type="button" class="btn" id="btn-gerar-pdf">Gerar PDF</button>
   </div>
+  <div id="pdf-progress" style="display:none; margin-top:8px;">
+    <div style="background:#eee;border-radius:4px;height:12px;overflow:hidden;">
+      <div id="pdf-progress-bar" style="height:100%;width:0%;background:#28a745;transition:width .2s;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:0.9rem;">
+      <span id="pdf-progress-status">Preparando...</span>
+      <span id="pdf-progress-percent">0%</span>
+    </div>
+  </div>
 </section>
       
 </main>
@@ -560,7 +569,9 @@
     <!-- JS linkado corretamente -->
 
     <!-- Biblioteca html2pdf 
-    <script src="static/js/html2pdf.bundle.min.js"></script-->
+    <!-- Importa o script no final do body -->
+    <!-- Biblioteca html2pdf (necessária para gerar PDF) -->
+    <script src="static/js/html2pdf.bundle.min.js"></script>
 
     <!-- Importa o script no final do body -->
     <script src="static/js/script.js" ></script>

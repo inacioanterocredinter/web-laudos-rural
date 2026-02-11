@@ -2210,137 +2210,176 @@ function initGaleria() {
 
 
 /* ============================================================
-   PDF (html2pdf)
+   PDF (html2pdf) — compressão iterativa com barra de progresso
+   - Gera PDF a partir de #export-area
+   - Tenta reduzir qualidade/escala até ficar <= 500KB
+   - Mostra barra de progresso em #pdf-progress
    ============================================================ */
-/*
+
 function initPDF() {
   const btn = qs('#btn-gerar-pdf');
   if (!btn) return;
 
-  btn.addEventListener('click', () => {
-    const elemento = qs('#export-area');
+  const progressWrap = qs('#pdf-progress');
+  const progressBar = qs('#pdf-progress-bar');
+  const progressStatus = qs('#pdf-progress-status');
+  const progressPercent = qs('#pdf-progress-percent');
 
-    // 1) Ativa um “modo PDF” que só muda a visibilidade (sem reflow)
+  function updateProgress(p, msg) {
+    if (progressBar) progressBar.style.width = Math.max(0, Math.min(100, p)) + '%';
+    if (progressPercent) progressPercent.textContent = Math.round(p) + '%';
+    if (progressStatus && msg) progressStatus.textContent = msg;
+  }
+
+  async function compressImgElement(imgEl, quality = 0.85, maxDim = 1400) {
+    return new Promise((resolve, reject) => {
+      try {
+        const src = imgEl.src || '';
+        if (!src) return resolve();
+        const image = new Image();
+        // Do not set crossOrigin for data URLs (can break loading); only set for http(s) resources
+        if (!src.startsWith('data:')) image.crossOrigin = 'Anonymous';
+        image.onload = () => {
+          try {
+            const w = image.naturalWidth || image.width;
+            const h = image.naturalHeight || image.height;
+            let ratio = 1;
+            const max = Math.max(w, h);
+            if (max > maxDim) ratio = maxDim / max;
+            const cw = Math.max(1, Math.round(w * ratio));
+            const ch = Math.max(1, Math.round(h * ratio));
+            const canvas = document.createElement('canvas');
+            canvas.width = cw;
+            canvas.height = ch;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, cw, ch);
+            ctx.drawImage(image, 0, 0, cw, ch);
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            imgEl.src = dataUrl;
+            resolve();
+          } catch (err) {
+            console.warn('compressImgElement inner error', err);
+            resolve();
+          }
+        };
+        image.onerror = () => resolve();
+        image.src = src;
+      } catch (err) {
+        resolve();
+      }
+    });
+  }
+
+  btn.addEventListener('click', async () => {
+    const filename = 'laudo-agronegocio.pdf';
+    const maxBytes = 500 * 1024; // 500 KB
+    btn.disabled = true;
+    if (progressWrap) progressWrap.style.display = 'block';
+    updateProgress(2, 'Preparando conteúdo...');
     document.documentElement.classList.add('pdf-export');
 
-    const opt = {
-      margin: 2,  // margem externa controlada pelo html2pdf
-      filename: 'laudo-agronegocio.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 1.5,                          // melhora definição sem “explodir” a página
-        useCORS: true,
-        background: '#ffffff',
-        scrollY: 0,
-        windowWidth: document.documentElement.scrollWidth
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }, 
-      pagebreak: {
-        mode: ['css', 'legacy'],
-        before: ['.card:not(:first-of-type)'],
-        avoid: ['.card', '.table-wrapper', 'table', '.galeria-item']
-      },
-      onclone: (doc) => {
-        // 2) Garante a mesma regra no DOM clonado
-        const style = doc.createElement('style');
-        style.textContent = `
-          /* Invisível, mas mantém tamanho/posição (sem reflow) */                                   /*
-          .btn-remove-thumb { 
-            visibility: hidden !important; 
-            opacity: 0 !important; 
-            box-shadow: none !important; 
-          }
+    // Clone content to offscreen container to avoid visual changes
+    const src = qs('#export-area');
+    if (!src) return;
+    const clone = src.cloneNode(true);
+    const off = document.createElement('div');
+    off.style.position = 'fixed';
+    off.style.left = '-10000px';
+    off.style.top = '0';
+    off.style.width = 'auto';
+    off.appendChild(clone);
+    document.body.appendChild(off);
 
-          /* ---- Seu bloco já existente (mantido) ---- */
-          /* Cores fiéis */
-
-                                                                                                      /*
-
-          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                                                                                                      /*
-          /* Remover fundos globais pesados para caber e ficar legível */                            
-                                                                                                                /*
-          body { background: none !important; }
-          body::before, body::after { content: none !important; display: none !important; }
-
-          /* Header/Footer com cor */
-                                                                                                                /*
-          .app-header, .app-footer { 
-            position: static !important; 
-            background: #006647 !important; 
-            color: #fff !important; 
-          }
-
-          /* Container fluido (sem largura fixa); padding moderado */
-                                                                                                                /*
-          #export-area {
-            padding: 8mm !important;
-            box-sizing: border-box !important;
-            background: #fff !important;
-            width: auto !important; 
-            max-width: 100% !important;
-          }
-
-          /* Tabelas fluidas e sem arredondamento (evita clipping) */
-                                                                                                               /*
-          table {
-            width: 100% !important;
-            table-layout: auto !important;
-            border-radius: 0 !important;
-            overflow: visible !important;
-          }
-
-          /* Cabeçalhos com cor */
-                                                                                                                /*
-          th { background: #ecf5f0 !important; color: #006647 !important; }
-
-          /* Texto quebra; padding menor para caber */
-                                                                                                                /*
-          th, td {
-            white-space: normal !important;
-            word-break: break-word !important;
-            text-overflow: clip !important;
-            overflow: visible !important;
-            padding: 3px !important;
-            font-size: 0.80rem !important;
-            line-height: 1.2 !important;
-          }
-
-          /* Remove larguras fixas de colunas no PDF */
-                                                                                                                /*
-          .c-cultura, .c-data, .c-fonte, .c-estado, .c-municipio,
-          .c-preco, .c-acoes, .c-ano, .c-area, .c-produt,
-          .c-producao, .c-saldo, .c-atividade, .c-ua-ha,
-          .c-area-util, .c-quantidade, .c-peso, .c-descricao,
-          .c-marca, .c-ano-fab, .c-cor, .c-valor {
-            width: auto !important;
-          }
-
-          /* Cards simples (sem sombra) para evitar recorte visual) */
-                                                                                                                /*
-          .card {
-            box-shadow: none !important;
-            border-radius: 0 !important;
-            border: 1px solid #ddd !important;
-            padding: 10mm !important;
-          }
-        `;
-        doc.head.appendChild(style);
+    try {
+      // Initial compression of images in clone
+      const imgs = Array.from(clone.querySelectorAll('img'));
+      let i = 0;
+      for (const el of imgs) {
+        i++;
+        updateProgress(3 + (i / Math.max(1, imgs.length)) * 10, `Comprimindo imagens (${i}/${imgs.length})`);
+        await compressImgElement(el, 0.85, 1400);
       }
-    };
 
-    html2pdf()
-      .set(opt)
-      .from(elemento)
-      .save()
-      .finally(() => {
-        // 3) Desativa o “modo PDF” e restaura o estado visual
-        document.documentElement.classList.remove('pdf-export');
-      });
+      // Attempts with decreasing quality/scale
+      const attempts = [
+        { q: 0.95, scale: 2 },
+        { q: 0.9, scale: 1.8 },
+        { q: 0.85, scale: 1.6 },
+        { q: 0.8, scale: 1.4 },
+        { q: 0.75, scale: 1.2 },
+        { q: 0.65, scale: 1 }
+      ];
+
+      let success = false;
+      for (let attemptIndex = 0; attemptIndex < attempts.length; attemptIndex++) {
+        const a = attempts[attemptIndex];
+        updateProgress(15 + (attemptIndex / attempts.length) * 60, `Gerando PDF (tentativa ${attemptIndex + 1}/${attempts.length})`);
+
+        const opt = {
+          margin: 2,
+          filename,
+          image: { type: 'jpeg', quality: a.q },
+          html2canvas: { scale: a.scale, useCORS: true, background: '#ffffff', scrollY: 0, windowWidth: document.documentElement.scrollWidth },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+          pagebreak: { mode: ['css', 'legacy'], before: ['.card:not(:first-of-type)'], avoid: ['.card', '.table-wrapper', 'table', '.galeria-item'] },
+          onclone: (doc) => {
+            const style = doc.createElement('style');
+            style.textContent = `.btn-remove-thumb{visibility:hidden !important;opacity:0 !important} body{background:none !important}`;
+            doc.head.appendChild(style);
+          }
+        };
+
+        try {
+          // Generate PDF and access jsPDF instance to get blob size
+          const jspdfInstance = await html2pdf().set(opt).from(clone).toPdf().get('pdf');
+          const blob = jspdfInstance.output('blob');
+          const kb = Math.round(blob.size / 1024);
+          updateProgress(15 + ((attemptIndex + 1) / attempts.length) * 60 + 5, `Tamanho atual ${kb} KB`);
+
+          if (blob.size <= maxBytes) {
+            // automatic download
+            jspdfInstance.save(filename);
+            success = true;
+            break;
+          } else {
+            // If too big, aggressively recompress images in clone before next attempt
+            const imgs2 = Array.from(clone.querySelectorAll('img'));
+            let j = 0;
+            for (const el of imgs2) {
+              j++;
+              updateProgress(40 + (j / Math.max(1, imgs2.length)) * 30, `Recomprimindo imagens (${j}/${imgs2.length})`);
+              await compressImgElement(el, Math.max(0.35, a.q - 0.15), 1200);
+            }
+          }
+        } catch (err) {
+          console.error('Erro ao gerar PDF (tentativa):', err);
+        }
+      }
+
+      if (!success) {
+        updateProgress(90, 'Não foi possível atingir 500KB — baixando versão final.');
+        try {
+          await html2pdf().set({ margin: 2, filename, image: { type: 'jpeg', quality: 0.6 }, html2canvas: { scale: 1, useCORS: true, background: '#ffffff', scrollY: 0 } }).from(clone).save();
+        } catch (err) {
+          console.error('Fallback save erro:', err);
+          alert('Erro ao gerar PDF.');
+        }
+      }
+    } finally {
+      document.documentElement.classList.remove('pdf-export');
+      btn.disabled = false;
+      updateProgress(100, 'Concluído');
+      setTimeout(() => {
+        if (progressWrap) progressWrap.style.display = 'none';
+        try { off.remove(); } catch (e) {}
+      }, 800);
+    }
   });
 }
 
-*/
+// Inicializa o PDF handler ao carregar o script
+initPDF();
 
 /* ============================================================
    TESTE (SEARCH)
