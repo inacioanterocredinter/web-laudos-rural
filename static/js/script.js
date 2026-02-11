@@ -2186,13 +2186,16 @@ function generatePDFSkeleton() {
       grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
       grid.style.gap = '10px';
       galleryImgs.forEach(img => {
-          const newImg = img.cloneNode(true);
-          newImg.style.width = '100%';
-          newImg.style.height = '150px';
-          newImg.style.objectFit = 'contain';
-          newImg.style.border = '1px solid #eee';
-          newImg.style.backgroundColor = '#fff';
-          grid.appendChild(newImg);
+          const imgContainer = document.createElement('div');
+          imgContainer.style.width = '100%';
+          imgContainer.style.height = '150px';
+          imgContainer.style.border = '1px solid #eee';
+          imgContainer.style.backgroundColor = '#fff';
+          imgContainer.style.backgroundRepeat = 'no-repeat';
+          imgContainer.style.backgroundPosition = 'center center';
+          imgContainer.style.backgroundSize = 'contain';
+          imgContainer.style.backgroundImage = `url('${img.src}')`;
+          grid.appendChild(imgContainer);
       });
       galSection.appendChild(grid);
       container.appendChild(galSection);
