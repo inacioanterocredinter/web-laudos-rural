@@ -188,7 +188,7 @@ function addRowPrecoFromSheet(
     <td>
       <input type="text" class="preco-valor" 
              value="${preco ? preco.toString().replace('.', ',') : ''}"
-             placeholder="R$ 0,00"/>
+             placeholder="0,00"/>
     </td>
 
     <td><button type="button" class="btn btn-remove">Remover</button></td>
@@ -267,7 +267,7 @@ function addRowPrecoEmpty() {
         <option value="" disabled selected>Selecione o município</option>
       </select>
     </td>
-    <td><input type="text" class="preco-valor" placeholder="R$ 0,00"/></td>
+    <td><input type="text" class="preco-valor" placeholder="0,00"/></td>
     <td><button type="button" class="btn btn-remove">Remover</button></td>
   `;
   tbody.appendChild(tr);
@@ -844,7 +844,7 @@ function addPropriedadeBlock() {
     <!-- Valor Terra Nua (dinâmico) -->
       <label for="prop-terra-nua-${idx}">Valor Terra Nua
           <input type="text" id="prop-terra-nua-${idx}" class="money"
-           inputmode="numeric" placeholder="R$ 0,00" required />
+           inputmode="numeric" placeholder="0,00" required />
     </label>
   `;
 
@@ -1573,7 +1573,7 @@ function addRowRebanho(tbody, faixa = '', sexo = '', quantidade = 0, valund = 0)
     <td><input value="${String(quantidade)}" class="reb-qtd" inputmode="numeric" /></td>
 
     <!-- Valor Unitário (BRL) -->
-    <td><input class="reb-valor" placeholder="R$ 0,00" /></td>
+    <td><input class="reb-valor" placeholder="0,00" /></td>
 
     <td><button class="btn btn-remove" type="button">Remover</button></td>
   `;
@@ -1948,6 +1948,286 @@ async function initEstadosCidadesOffline() {
   }
 }
 
+/* ============================================================
+   GERADOR DE ESQUELETO PDF (Estrutura limpa para impressão)
+   ============================================================ */
+function generatePDFSkeleton() {
+  // Cria container principal
+  const container = document.createElement('div');
+  container.id = 'pdf-skeleton';
+  container.style.width = '100%';
+  container.style.padding = '20px';
+  container.style.boxSizing = 'border-box';
+  container.style.fontFamily = 'Arial, sans-serif';
+  container.style.fontSize = '12px';
+  container.style.color = '#000';
+  container.style.background = '#fff';
+
+  // Helpers
+  const val = (id) => { const el = document.getElementById(id); return el ? (el.value || '') : ''; };
+  const text = (id) => { const el = document.getElementById(id); return el ? el.textContent : ''; };
+
+  // --- CABEÇALHO ---
+  const header = document.createElement('div');
+  header.style.textAlign = 'center';
+  header.style.marginBottom = '20px';
+  header.style.borderBottom = '2px solid #003641';
+  header.style.paddingBottom = '10px';
+  header.innerHTML = `
+    <img src="static/img/logo_credinter.png" style="height: 60px; margin-bottom: 10px;">
+    <h1 style="margin: 0; color: #003641; font-size: 22px; text-transform: uppercase;">Laudo de Levantamento e Estimativa de Produção</h1>
+  `;
+  container.appendChild(header);
+
+  // --- 1. DADOS DO PRODUTOR ---
+  const section1 = document.createElement('div');
+  section1.style.marginBottom = '20px';
+  section1.innerHTML = `<h2 style="background: #e0f2f1; padding: 8px; color: #004d40; border-left: 5px solid #004d40; font-size: 16px; margin-bottom: 10px;">1. DADOS DO PRODUTOR(A)</h2>`;
+  
+  let prodTable = `<table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+    <tr style="background: #f5f5f5;">
+      <th style="border: 1px solid #ccc; padding: 6px; text-align: left;">Nome</th>
+      <th style="border: 1px solid #ccc; padding: 6px; text-align: left;">CPF/CNPJ</th>
+      <th style="border: 1px solid #ccc; padding: 6px; text-align: left;">Porte</th>
+      <th style="border: 1px solid #ccc; padding: 6px; text-align: left;">Telefone</th>
+    </tr>`;
+  
+  // Produtor Base
+  prodTable += `<tr>
+    <td style="border: 1px solid #ccc; padding: 6px;">${val('cliente-nome')}</td>
+    <td style="border: 1px solid #ccc; padding: 6px;">${val('cliente-cpfcnpj')}</td>
+    <td style="border: 1px solid #ccc; padding: 6px;">${val('cliente-porte')}</td>
+    <td style="border: 1px solid #ccc; padding: 6px;">${val('cliente-telefone')}</td>
+  </tr>`;
+
+  // Produtores Adicionais
+  const extraProds = document.querySelectorAll('#container-clientes input[id^="cliente-nome-"]');
+  extraProds.forEach(input => {
+      const idx = input.id.split('-').pop();
+      prodTable += `<tr>
+        <td style="border: 1px solid #ccc; padding: 6px;">${input.value}</td>
+        <td style="border: 1px solid #ccc; padding: 6px;">${val(`cliente-cpfcnpj-${idx}`)}</td>
+        <td style="border: 1px solid #ccc; padding: 6px;">${val(`cliente-porte-${idx}`)}</td>
+        <td style="border: 1px solid #ccc; padding: 6px;">${val(`cliente-telefone-${idx}`)}</td>
+      </tr>`;
+  });
+  prodTable += `</table>`;
+  section1.innerHTML += prodTable;
+  container.appendChild(section1);
+
+  // --- 2. PROPRIEDADES ---
+  const section2 = document.createElement('div');
+  section2.style.marginBottom = '20px';
+  section2.innerHTML = `<h2 style="background: #e0f2f1; padding: 8px; color: #004d40; border-left: 5px solid #004d40; font-size: 16px; margin-bottom: 10px;">2. PROPRIEDADE(S)</h2>`;
+
+  let propTable = `<table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+    <tr style="background: #f5f5f5;">
+      <th style="border: 1px solid #ccc; padding: 5px; text-align: left;">Nome</th>
+      <th style="border: 1px solid #ccc; padding: 5px; text-align: left;">Área (ha)</th>
+      <th style="border: 1px solid #ccc; padding: 5px; text-align: left;">Posse</th>
+      <th style="border: 1px solid #ccc; padding: 5px; text-align: left;">Matrícula</th>
+      <th style="border: 1px solid #ccc; padding: 5px; text-align: left;">Localização</th>
+      <th style="border: 1px solid #ccc; padding: 5px; text-align: left;">Situação</th>
+      <th style="border: 1px solid #ccc; padding: 5px; text-align: left;">Terra Nua</th>
+    </tr>`;
+
+  // Propriedade Base
+  propTable += `<tr>
+    <td style="border: 1px solid #ccc; padding: 5px;">${val('prop-nome')}</td>
+    <td style="border: 1px solid #ccc; padding: 5px;">${val('prop-area-total')}</td>
+    <td style="border: 1px solid #ccc; padding: 5px;">${val('prop-posse')}</td>
+    <td style="border: 1px solid #ccc; padding: 5px;">${val('prop-matricula')}</td>
+    <td style="border: 1px solid #ccc; padding: 5px;">${val('prop-estado')} - ${val('prop-cidade')}</td>
+    <td style="border: 1px solid #ccc; padding: 5px;">${val('prop-situacao')}</td>
+    <td style="border: 1px solid #ccc; padding: 5px;">${val('prop-terra-nua')}</td>
+  </tr>`;
+
+  // Propriedades Adicionais
+  const extraProps = document.querySelectorAll('.propriedade-bloco:not(.propriedade-bloco--base) input[id^="prop-nome-"]');
+  extraProps.forEach(input => {
+      const idx = input.id.split('-').pop();
+      propTable += `<tr>
+        <td style="border: 1px solid #ccc; padding: 5px;">${input.value}</td>
+        <td style="border: 1px solid #ccc; padding: 5px;">${val(`prop-area-${idx}`)}</td>
+        <td style="border: 1px solid #ccc; padding: 5px;">${val(`prop-posse-${idx}`)}</td>
+        <td style="border: 1px solid #ccc; padding: 5px;">${val(`prop-matricula-${idx}`)}</td>
+        <td style="border: 1px solid #ccc; padding: 5px;">${val(`prop-estado-${idx}`)} - ${val(`prop-cidade-${idx}`)}</td>
+        <td style="border: 1px solid #ccc; padding: 5px;">${val(`prop-situacao-${idx}`)}</td>
+        <td style="border: 1px solid #ccc; padding: 5px;">${val(`prop-terra-nua-${idx}`)}</td>
+      </tr>`;
+  });
+  propTable += `</table>`;
+  section2.innerHTML += propTable;
+  container.appendChild(section2);
+
+  // --- TABELAS DINÂMICAS ---
+  const createTableFromDOM = (domTableId, title) => {
+      const domTable = document.querySelector(domTableId);
+      if (!domTable) return null;
+      const rows = domTable.querySelectorAll('tbody tr');
+      if (rows.length === 0) return null;
+
+      const wrapper = document.createElement('div');
+      wrapper.style.marginBottom = '20px';
+      wrapper.style.breakInside = 'avoid';
+      if (title) wrapper.innerHTML = `<h3 style="border-bottom: 1px solid #ccc; padding-bottom: 5px; color: #333; font-size: 14px; margin-bottom: 8px;">${title}</h3>`;
+
+      const table = document.createElement('table');
+      table.style.width = '100%';
+      table.style.borderCollapse = 'collapse';
+      table.style.fontSize = '11px';
+
+      // Header
+      const thead = document.createElement('thead');
+      const headerRow = document.createElement('tr');
+      headerRow.style.backgroundColor = '#f0f0f0';
+      const domThs = domTable.querySelectorAll('thead th');
+      let colCount = 0;
+      const skipIndices = [];
+      domThs.forEach((th, idx) => {
+          if (th.classList.contains('c-acoes') || th.textContent.trim() === 'Ações' || th.textContent.trim() === '') {
+              skipIndices.push(idx); return;
+          }
+          const newTh = document.createElement('th');
+          newTh.textContent = th.textContent;
+          newTh.style.border = '1px solid #ccc';
+          newTh.style.padding = '5px';
+          newTh.style.textAlign = 'left';
+          headerRow.appendChild(newTh);
+          colCount++;
+      });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+
+      // Body
+      const tbody = document.createElement('tbody');
+      rows.forEach(row => {
+          const newRow = document.createElement('tr');
+          row.querySelectorAll('td').forEach((cell, idx) => {
+              if (skipIndices.includes(idx)) return;
+              const newCell = document.createElement('td');
+              newCell.style.border = '1px solid #ccc';
+              newCell.style.padding = '5px';
+              const input = cell.querySelector('input, select');
+              newCell.textContent = input ? input.value : cell.textContent;
+              newRow.appendChild(newCell);
+          });
+          tbody.appendChild(newRow);
+      });
+      table.appendChild(tbody);
+
+      // Footer
+      const domFoot = domTable.querySelector('tfoot');
+      if (domFoot) {
+          const tfoot = document.createElement('tfoot');
+          domFoot.querySelectorAll('tr').forEach(row => {
+              const newRow = document.createElement('tr');
+              row.querySelectorAll('td').forEach((cell, idx) => {
+                  if (skipIndices.includes(idx)) return;
+                  const newCell = document.createElement('td');
+                  newCell.style.border = '1px solid #ccc';
+                  newCell.style.padding = '5px';
+                  newCell.style.fontWeight = 'bold';
+                  newCell.style.backgroundColor = '#fafafa';
+                  newCell.innerHTML = cell.innerHTML;
+                  if (cell.hasAttribute('colspan') && idx === 0) newCell.setAttribute('colspan', colCount - 1);
+                  newRow.appendChild(newCell);
+              });
+              tfoot.appendChild(newRow);
+          });
+          table.appendChild(tfoot);
+      }
+      wrapper.appendChild(table);
+      return wrapper;
+  };
+
+  const tables = [
+      {id: '#tbl-precos', title: 'Preços do Produto'},
+      {id: '#tbl-agricola', title: 'Produção Agrícola'},
+      {id: '#tbl-pecuaria', title: 'Pecuária de Corte'},
+      {id: '#tbl-pecuaria-leite', title: 'Pecuária Leiteira'},
+      {id: '#tbl-culturadiversa', title: 'Cultura Diversa'},
+      {id: '#tbl-historico', title: 'Histórico de Produção'},
+      {id: '#tbl-rebanho', title: 'Rebanho Existente'},
+      {id: '#tbl-bens', title: 'Bens'}
+  ];
+  tables.forEach(t => { const el = createTableFromDOM(t.id, t.title); if (el) container.appendChild(el); });
+
+  // --- RESUMO FINANCEIRO ---
+  const summary = document.createElement('div');
+  summary.style.marginTop = '20px';
+  summary.style.marginBottom = '20px';
+  summary.style.padding = '15px';
+  summary.style.border = '1px solid #ddd';
+  summary.style.borderRadius = '5px';
+  summary.style.backgroundColor = '#f9f9f9';
+  summary.style.breakInside = 'avoid';
+  summary.innerHTML = `
+    <h3 style="margin-top: 0; margin-bottom: 10px; color: #004d40;">Resumo Financeiro</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+      <div><strong>Total Agrícola:</strong> ${text('renda-total-agricola')}</div>
+      <div><strong>Total Pecuária:</strong> ${text('renda-total-pecuaria')}</div>
+      <div><strong>Total Diversos:</strong> ${text('total-renda-culturadiversa-tabela') || 'R$ 0,00'}</div>
+      <div style="grid-column: 1 / -1; margin-top: 10px; font-size: 14px; color: #003641; border-top: 1px solid #ccc; padding-top: 5px;">
+        <strong>Total Geral: ${text('renda-total')}</strong>
+      </div>
+    </div>
+  `;
+  container.appendChild(summary);
+
+  // --- GALERIA ---
+  const galleryImgs = document.querySelectorAll('#galeria-imagens img');
+  if (galleryImgs.length > 0) {
+      const galSection = document.createElement('div');
+      galSection.style.breakInside = 'avoid';
+      galSection.innerHTML = `<h3 style="border-bottom: 1px solid #ccc; padding-bottom: 5px; color: #333; font-size: 14px;">Galeria Fotográfica</h3>`;
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      grid.style.gap = '10px';
+      galleryImgs.forEach(img => {
+          const newImg = img.cloneNode(true);
+          newImg.style.width = '100%';
+          newImg.style.height = '150px';
+          newImg.style.objectFit = 'contain';
+          newImg.style.border = '1px solid #eee';
+          newImg.style.backgroundColor = '#fff';
+          grid.appendChild(newImg);
+      });
+      galSection.appendChild(grid);
+      container.appendChild(galSection);
+  }
+
+  // --- DADOS DO AGRÔNOMO ---
+  const agroSection = document.createElement('div');
+  agroSection.style.marginTop = '30px';
+  agroSection.style.borderTop = '2px solid #003641';
+  agroSection.style.paddingTop = '10px';
+  agroSection.style.breakInside = 'avoid';
+  agroSection.innerHTML = `
+    <h3 style="margin: 0 0 10px 0; color: #003641; font-size: 14px;">Responsável Técnico</h3>
+    <table style="width: 100%; font-size: 12px;">
+      <tr>
+        <td style="padding: 4px;"><strong>Nome:</strong> ${val('cliente-resp-tec')}</td>
+        <td style="padding: 4px;"><strong>CREA/CFTA:</strong> ${val('cliente-crea')}</td>
+      </tr>
+      <tr>
+        <td colspan="2" style="padding: 4px;"><strong>Observação:</strong> ${val('cliente-observacao')}</td>
+      </tr>
+      <tr>
+        <td colspan="2" style="padding: 4px;"><strong>Data:</strong> ${val('cliente-data')}</td>
+      </tr>
+    </table>
+    <div style="margin-top: 40px; text-align: center;">
+      <div style="border-top: 1px solid #000; width: 60%; margin: 0 auto; padding-top: 5px;">
+        Assinatura do Responsável Técnico
+      </div>
+    </div>
+  `;
+  container.appendChild(agroSection);
+
+  return container;
+}
 
 /* ============================================================
    Galeria de Imagens (IndexedDB + compressão WebP opcional)
@@ -2271,52 +2551,6 @@ function initPDF() {
     });
   }
 
-  // Prepara o clone antes da geração: evita cortes e organiza galeria em páginas (6 imagens por página)
-  function prepareCloneForPdf(doc) {
-    try {
-      const style = doc.createElement('style');
-      style.textContent = `
-        /* Evitar corte dentro dos cards/tabelas */
-        .card, .table-wrapper, table { break-inside: avoid; page-break-inside: avoid; -webkit-column-break-inside: avoid; }
-        table, tr, td { page-break-inside: avoid; }
-        /* Galeria: até 6 imagens por página */
-        .pdf-gallery-page { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; page-break-after: always; }
-        .pdf-gallery-page:last-child { page-break-after: auto; }
-        .pdf-gallery-page img { width: 100%; height: auto; object-fit: contain; display:block; border:1px solid #e5e7eb; background:#fff; }
-        /* Ajustes visuais para export */
-        body { background: none !important; }
-      `;
-      doc.head.appendChild(style);
-
-      // Reorganiza galeria de imagens em páginas com no máximo 6 imagens
-      const gallery = doc.querySelector('#galeria-imagens');
-      if (gallery) {
-        const imgs = Array.from(gallery.querySelectorAll('img'));
-        if (imgs.length > 0) {
-          // Remover conteúdo original
-          while (gallery.firstChild) gallery.removeChild(gallery.firstChild);
-
-          for (let i = 0; i < imgs.length; i += 6) {
-            const pageDiv = doc.createElement('div');
-            pageDiv.className = 'pdf-gallery-page';
-            const chunk = imgs.slice(i, i + 6);
-            chunk.forEach((img) => {
-              // clone the image node to avoid moving original references
-              const newImg = img.cloneNode(true);
-              // Ensure it's not too large
-              newImg.style.maxWidth = '100%';
-              newImg.style.height = 'auto';
-              pageDiv.appendChild(newImg);
-            });
-            gallery.appendChild(pageDiv);
-          }
-        }
-      }
-    } catch (err) {
-      console.warn('prepareCloneForPdf error', err);
-    }
-  }
-
   btn.addEventListener('click', async () => {
     const filename = 'laudo-agronegocio.pdf';
     const maxBytes = 500 * 1024; // 500 KB
@@ -2325,10 +2559,10 @@ function initPDF() {
     updateProgress(2, 'Preparando conteúdo...');
     document.documentElement.classList.add('pdf-export');
 
-    // Clone content to offscreen container to avoid visual changes
-    const src = qs('#export-area');
-    if (!src) return;
-    const clone = src.cloneNode(true);
+    // GERA O ESQUELETO DO PDF (em vez de clonar a tela)
+    const clone = generatePDFSkeleton();
+    
+    // Coloca em container offscreen
     const off = document.createElement('div');
     off.style.position = 'fixed';
     off.style.left = '-10000px';
@@ -2361,41 +2595,41 @@ function initPDF() {
       for (let attemptIndex = 0; attemptIndex < attempts.length; attemptIndex++) {
         const a = attempts[attemptIndex];
         updateProgress(15 + (attemptIndex / attempts.length) * 60, `Gerando PDF (tentativa ${attemptIndex + 1}/${attempts.length})`);
-
-        const opt = {
-          margin: 2,
-          filename,
-          image: { type: 'jpeg', quality: a.q },
-          html2canvas: { scale: a.scale, useCORS: true, background: '#ffffff', scrollY: 0, windowWidth: document.documentElement.scrollWidth },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-          pagebreak: { mode: ['css', 'legacy'], before: ['.card:not(:first-of-type)'], avoid: ['.card', '.table-wrapper', 'table', '.galeria-item', '.pdf-gallery-page'] },
-          onclone: (doc) => {
-            try { prepareCloneForPdf(doc); } catch (e) { console.warn('onclone prepare error', e); }
-          }
-        };
-
+        // Before generating, recompress all images in the clone to the target quality/size
         try {
+          const imgsForAttempt = Array.from(clone.querySelectorAll('img'));
+          let j = 0;
+          // maxDim scales inversely with html2canvas scale to keep pixel count reasonable
+          const maxDim = Math.max(600, Math.round(1400 / a.scale));
+          for (const el of imgsForAttempt) {
+            j++;
+            updateProgress(15 + (j / Math.max(1, imgsForAttempt.length)) * 10, `Recomprimindo imagens (${j}/${imgsForAttempt.length})`);
+            await compressImgElement(el, Math.max(0.15, a.q), maxDim);
+          }
+          
+          const opt = {
+            margin: 2,
+            filename,
+            image: { type: 'jpeg', quality: a.q },
+            html2canvas: { scale: a.scale, useCORS: true, background: '#ffffff', scrollY: 0, windowWidth: document.documentElement.scrollWidth },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+            pagebreak: { mode: ['css', 'legacy'], before: ['.card:not(:first-of-type)'], avoid: ['.card', '.table-wrapper', 'table', '.galeria-item', '.pdf-gallery-page'] },
+          };
+
           // Generate PDF and access jsPDF instance to get blob size
           const jspdfInstance = await html2pdf().set(opt).from(clone).toPdf().get('pdf');
+          // output as blob
           const blob = jspdfInstance.output('blob');
           const kb = Math.round(blob.size / 1024);
-          updateProgress(15 + ((attemptIndex + 1) / attempts.length) * 60 + 5, `Tamanho atual ${kb} KB`);
+          updateProgress(40 + ((attemptIndex + 1) / attempts.length) * 40, `Tamanho atual ${kb} KB`);
 
           if (blob.size <= maxBytes) {
             // automatic download
             jspdfInstance.save(filename);
             success = true;
             break;
-          } else {
-            // If too big, aggressively recompress images in clone before next attempt
-            const imgs2 = Array.from(clone.querySelectorAll('img'));
-            let j = 0;
-            for (const el of imgs2) {
-              j++;
-              updateProgress(40 + (j / Math.max(1, imgs2.length)) * 30, `Recomprimindo imagens (${j}/${imgs2.length})`);
-              await compressImgElement(el, Math.max(0.35, a.q - 0.15), 1200);
-            }
           }
+          // otherwise loop to next attempt with lower quality/scale
         } catch (err) {
           console.error('Erro ao gerar PDF (tentativa):', err);
         }
@@ -2404,7 +2638,7 @@ function initPDF() {
       if (!success) {
         updateProgress(90, 'Não foi possível atingir 500KB — baixando versão final.');
         try {
-          await html2pdf().set({ margin: 2, filename, image: { type: 'jpeg', quality: 0.5 }, html2canvas: { scale: 1, useCORS: true, background: '#ffffff', scrollY: 0, windowWidth: document.documentElement.scrollWidth }, pagebreak: { mode: ['css', 'legacy'], before: ['.card:not(:first-of-type)'], avoid: ['.card', '.table-wrapper', 'table', '.galeria-item', '.pdf-gallery-page'] }, onclone: (doc) => { try { prepareCloneForPdf(doc); } catch(e){} } }).from(clone).save();
+          await html2pdf().set({ margin: 2, filename, image: { type: 'jpeg', quality: 0.5 }, html2canvas: { scale: 1, useCORS: true, background: '#ffffff', scrollY: 0, windowWidth: document.documentElement.scrollWidth }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }, pagebreak: { mode: ['css', 'legacy'], before: ['.card:not(:first-of-type)'], avoid: ['.card', '.table-wrapper', 'table', '.galeria-item', '.pdf-gallery-page'] } }).from(clone).save();
         } catch (err) {
           console.error('Fallback save erro:', err);
           alert('Erro ao gerar PDF.');
@@ -2679,5 +2913,42 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js").catch(console.error);
   });
 }
+
+/* ============================================================
+   Atualizar site — limpa caches e recarrega para forçar fetch da rede
+   ============================================================ */
+function bindAtualizarSiteButton() {
+  const btn = document.getElementById('btn-atualizar-site');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    try {
+      btn.disabled = true;
+      const oldText = btn.textContent;
+      btn.textContent = 'Atualizando...';
+
+      // 1) Limpa caches do contexto da página
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+
+      // 2) Notifica o service worker para também limpar caches
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHES' });
+      }
+
+      // 3) Pequena pausa para garantir que caches sejam removidos
+      setTimeout(() => location.reload(), 500);
+    } catch (err) {
+      console.error('Erro ao atualizar site:', err);
+      alert('Falha ao atualizar. Verifique a conexão e tente novamente.');
+      btn.disabled = false;
+      btn.textContent = 'Atualizar Site';
+    }
+  });
+}
+
+// Vincula o botão após boot
+window.addEventListener('load', () => bindAtualizarSiteButton());
 
 window.addEventListener('DOMContentLoaded', boot);

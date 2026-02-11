@@ -86,3 +86,19 @@ self.addEventListener("fetch", (e) => {
     );
   }
 });
+
+// Mensagens vindas da página (por exemplo: limpar caches)
+self.addEventListener('message', (e) => {
+  try {
+    const data = e.data || {};
+    if (data && data.type === 'CLEAR_CACHES') {
+      console.log('[SW] Received CLEAR_CACHES message');
+      caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).then(() => {
+        console.log('[SW] All caches cleared by message');
+        self.skipWaiting();
+      });
+    }
+  } catch (err) {
+    console.warn('[SW] Error handling message', err);
+  }
+});

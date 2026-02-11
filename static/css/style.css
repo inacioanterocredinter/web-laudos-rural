@@ -60,13 +60,26 @@ select:focus-visible,
   display: flex;
   align-items: center;
   gap: 15px;
+  justify-content: space-between;
+}
+
+.app-header h1 {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+}
+
+#btn-atualizar-site {
+  white-space: nowrap;
 }
 
 /* ALTERA ESPAÇO NAS LATERAIS */
 .container {
-  max-width: 1200px;
-  margin: auto;
+  width: 100%;
+  max-width: none; /* remove restrição lateral para permitir tabelas maiores */
+  margin: 0;       /* ocupa toda a largura disponível */
   padding: 20px;
+  box-sizing: border-box;
 }
 
 .logo-header {
