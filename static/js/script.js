@@ -612,7 +612,7 @@ if (terraNuaBase) maskBRL(terraNuaBase);
   attachDecimal(qs('#prop-area-total'));
   //attachLettersOnly(qs('#prop-propriedade'), 'Proprietário');
   attachLettersOnly(qs('#prop-posse'), 'Condição de posse');
-  attachCPF(qs('#prop-cnpj'), qs('#prop-cnpj-help'));
+  applyCnpjMask(qs('#prop-cnpj'));
   attachMatricula13(qs('#prop-matricula'), qs('#prop-matricula-help'));
 
   // Required apenas em inputs editáveis
@@ -2914,41 +2914,48 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-/* ============================================================
-   Atualizar site — limpa caches e recarrega para forçar fetch da rede
-   ============================================================ */
-function bindAtualizarSiteButton() {
-  const btn = document.getElementById('btn-atualizar-site');
-  if (!btn) return;
-  btn.addEventListener('click', async () => {
-    try {
-      btn.disabled = true;
-      const oldText = btn.textContent;
-      btn.textContent = 'Atualizando...';
+  // Atualizar site (limpa cache e SW)
+  const btnAtualizar = qs('#btn-atualizar-site');
+  if (btnAtualizar) {
+    btnAtualizar.addEventListener('click', async () => {
+      if (!confirm('Deseja forçar a atualização do site? A versão mais recente será carregada.')) {
+        return;
+      }
 
-      // 1) Limpa caches do contexto da página
-      if ('caches' in window) {
+      try {
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration && registration.active) {
+            // 1. Tenta limpar o cache via mensagem para o SW
+            registration.active.postMessage({ type: 'CLEAR_CACHES' });
+            console.log('Mensagem CLEAR_CACHES enviada ao Service Worker.');
+          }
+
+          // 2. Desregistra TODOS os service workers para garantir a instalação do novo
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          if (registrations.length) {
+            await Promise.all(registrations.map(reg => reg.unregister()));
+            console.log(`${registrations.length} Service Worker(s) desregistrado(s).`);
+          }
+        }
+
+        // 3. Limpa todos os caches do cliente como garantia final
         const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k)));
+        if (keys.length) {
+          await Promise.all(keys.map(key => caches.delete(key)));
+          console.log(`Caches (${keys.join(', ')}) limpos com sucesso.`);
+        }
+
+        alert('O site será recarregado para aplicar a atualização.');
+        
+        // 4. Recarrega a página, forçando a busca de novos recursos da rede
+        window.location.reload(true);
+
+      } catch (err) {
+        console.error('Falha ao tentar atualizar o site:', err);
+        alert('Ocorreu um erro ao tentar atualizar. Verifique o console para mais detalhes e, se possível, limpe o cache do navegador manualmente.');
       }
-
-      // 2) Notifica o service worker para também limpar caches
-      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHES' });
-      }
-
-      // 3) Pequena pausa para garantir que caches sejam removidos
-      setTimeout(() => location.reload(), 500);
-    } catch (err) {
-      console.error('Erro ao atualizar site:', err);
-      alert('Falha ao atualizar. Verifique a conexão e tente novamente.');
-      btn.disabled = false;
-      btn.textContent = 'Atualizar Site';
-    }
-  });
-}
-
-// Vincula o botão após boot
-window.addEventListener('load', () => bindAtualizarSiteButton());
+    });
+  }
 
 window.addEventListener('DOMContentLoaded', boot);
