@@ -2271,6 +2271,52 @@ function initPDF() {
     });
   }
 
+  // Prepara o clone antes da geração: evita cortes e organiza galeria em páginas (6 imagens por página)
+  function prepareCloneForPdf(doc) {
+    try {
+      const style = doc.createElement('style');
+      style.textContent = `
+        /* Evitar corte dentro dos cards/tabelas */
+        .card, .table-wrapper, table { break-inside: avoid; page-break-inside: avoid; -webkit-column-break-inside: avoid; }
+        table, tr, td { page-break-inside: avoid; }
+        /* Galeria: até 6 imagens por página */
+        .pdf-gallery-page { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; page-break-after: always; }
+        .pdf-gallery-page:last-child { page-break-after: auto; }
+        .pdf-gallery-page img { width: 100%; height: auto; object-fit: contain; display:block; border:1px solid #e5e7eb; background:#fff; }
+        /* Ajustes visuais para export */
+        body { background: none !important; }
+      `;
+      doc.head.appendChild(style);
+
+      // Reorganiza galeria de imagens em páginas com no máximo 6 imagens
+      const gallery = doc.querySelector('#galeria-imagens');
+      if (gallery) {
+        const imgs = Array.from(gallery.querySelectorAll('img'));
+        if (imgs.length > 0) {
+          // Remover conteúdo original
+          while (gallery.firstChild) gallery.removeChild(gallery.firstChild);
+
+          for (let i = 0; i < imgs.length; i += 6) {
+            const pageDiv = doc.createElement('div');
+            pageDiv.className = 'pdf-gallery-page';
+            const chunk = imgs.slice(i, i + 6);
+            chunk.forEach((img) => {
+              // clone the image node to avoid moving original references
+              const newImg = img.cloneNode(true);
+              // Ensure it's not too large
+              newImg.style.maxWidth = '100%';
+              newImg.style.height = 'auto';
+              pageDiv.appendChild(newImg);
+            });
+            gallery.appendChild(pageDiv);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('prepareCloneForPdf error', err);
+    }
+  }
+
   btn.addEventListener('click', async () => {
     const filename = 'laudo-agronegocio.pdf';
     const maxBytes = 500 * 1024; // 500 KB
@@ -2322,11 +2368,9 @@ function initPDF() {
           image: { type: 'jpeg', quality: a.q },
           html2canvas: { scale: a.scale, useCORS: true, background: '#ffffff', scrollY: 0, windowWidth: document.documentElement.scrollWidth },
           jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-          pagebreak: { mode: ['css', 'legacy'], before: ['.card:not(:first-of-type)'], avoid: ['.card', '.table-wrapper', 'table', '.galeria-item'] },
+          pagebreak: { mode: ['css', 'legacy'], before: ['.card:not(:first-of-type)'], avoid: ['.card', '.table-wrapper', 'table', '.galeria-item', '.pdf-gallery-page'] },
           onclone: (doc) => {
-            const style = doc.createElement('style');
-            style.textContent = `.btn-remove-thumb{visibility:hidden !important;opacity:0 !important} body{background:none !important}`;
-            doc.head.appendChild(style);
+            try { prepareCloneForPdf(doc); } catch (e) { console.warn('onclone prepare error', e); }
           }
         };
 
@@ -2360,7 +2404,7 @@ function initPDF() {
       if (!success) {
         updateProgress(90, 'Não foi possível atingir 500KB — baixando versão final.');
         try {
-          await html2pdf().set({ margin: 2, filename, image: { type: 'jpeg', quality: 0.6 }, html2canvas: { scale: 1, useCORS: true, background: '#ffffff', scrollY: 0 } }).from(clone).save();
+          await html2pdf().set({ margin: 2, filename, image: { type: 'jpeg', quality: 0.5 }, html2canvas: { scale: 1, useCORS: true, background: '#ffffff', scrollY: 0, windowWidth: document.documentElement.scrollWidth }, pagebreak: { mode: ['css', 'legacy'], before: ['.card:not(:first-of-type)'], avoid: ['.card', '.table-wrapper', 'table', '.galeria-item', '.pdf-gallery-page'] }, onclone: (doc) => { try { prepareCloneForPdf(doc); } catch(e){} } }).from(clone).save();
         } catch (err) {
           console.error('Fallback save erro:', err);
           alert('Erro ao gerar PDF.');
