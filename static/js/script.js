@@ -2833,22 +2833,7 @@ function initCulturadiversa() {
 
 
 
-/* ============================================================
-   Teste Botão Pelo Navegador
-   ============================================================ */
-document.getElementById("btn-gerar-pdf").addEventListener("click", function () {
 
-    // adiciona classe para ativar o modo de impressão (CSS @media print)
-    document.body.classList.add("pdf-export");
-
-    // espera o layout aplicar a classe antes de abrir o print
-    setTimeout(() => {
-        window.print();
-
-        // remove a classe após imprimir (opcional)
-        document.body.classList.remove("pdf-export");
-    }, 50);
-});
 
 
 
